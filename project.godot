@@ -19,12 +19,20 @@ config/name="minilens2"
 run/main_scene="res://levels/test.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Grid="*res://world/grid.gd"
+
 [display]
 
 window/size/width=1920
 window/size/height=1080
 window/size/test_width=1280
 window/size/test_height=720
+
+[node]
+
+name_casing=2
 
 [rendering]
 
