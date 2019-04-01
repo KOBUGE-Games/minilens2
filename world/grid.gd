@@ -5,7 +5,7 @@ const GRID_SIZE = Vector2(96, 96)
 var _entities = {} # entity => [position]
 var _positions = {} # position => entity
 
-func add_entity_position(entity: Object, position: Vector2):
+func add_entity_position(entity: Object, position: Vector2) -> void:
 	if position in _positions:
 		if entity != _positions[position]:
 			var other_entity = _positions[position]
@@ -19,7 +19,7 @@ func add_entity_position(entity: Object, position: Vector2):
 		_entities[entity] = []
 	_entities[entity].push_back(position)
 
-func remove_entity_position(entity: Object, position: Vector2):
+func remove_entity_position(entity: Object, position: Vector2) -> void:
 	if not (entity in _entities):
 		return
 	
@@ -31,10 +31,10 @@ func remove_entity_position(entity: Object, position: Vector2):
 	if _entities[entity].size() == 0:
 		_entities.erase(entity)
 
-func get_entity_at_position(position: Vector2):
+func get_entity_at_position(position: Vector2) -> Object:
 	return _positions.get(position, null)
 
-func remove_entity(entity):
+func remove_entity(entity) -> void:
 	if entity in _entities:
 		for position in _entities[entity]:
 			_positions.erase(position)

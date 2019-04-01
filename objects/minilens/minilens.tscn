@@ -15,4 +15,3 @@ polygon = PoolVector2Array( -48, 48, -48, -48, 0, -48, 48, 0, 48, 48 )
 current = true
 
 [node name="tween" type="Tween" parent="."]
-
