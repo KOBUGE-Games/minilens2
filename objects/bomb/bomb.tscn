@@ -11,10 +11,9 @@ script = ExtResource( 1 )
 color = Color( 0.184314, 0.0313726, 0, 1 )
 polygon = PoolVector2Array( 0, 48, -48, 0, 0, -48, 48, 0 )
 
-[node name="tween" type="Tween" parent="."]
-
 [node name="timer" type="Timer" parent="."]
+process_mode = 0
 wait_time = 2.3
 one_shot = true
 autostart = true
-[connection signal="timeout" from="timer" to="." method="explode"]
+[connection signal="timeout" from="timer" to="." method="explode" flags=3]

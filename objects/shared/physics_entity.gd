@@ -13,8 +13,11 @@ var tween: Tween
 var _moving := false
 var _moving_direction : Vector2
 var _moving_speed : float
+var _moved_last_frame := false
 
 func _enter_tree() -> void:
+	tween = Tween.new()
+	add_child(tween)
 	var grid_pos = get_grid_position()
 	Grid.add_entity_position(self, grid_pos)
 	global_position = (grid_pos + Vector2(0.5, 0.5)) * Grid.GRID_SIZE
@@ -23,7 +26,8 @@ func _exit_tree() -> void:
 	Grid.remove_entity(self)
 
 func _physics_process(_delta):
-	calculate_move()
+	if !_moving:
+		calculate_move()
 
 func calculate_move() -> void: pass
 
@@ -39,6 +43,8 @@ func move(direction: Vector2, stength: float, speed: float = 0.0) -> float:
 	Returns the speed of the movement, or -INF if unable to move.
 	"""
 	if _moving:
+		if _moving_direction.normalized().dot(direction.normalized()) > 0.9 and not _moved_last_frame:
+			return _moving_speed
 		return -INF
 	
 	stength -= get_mass()
@@ -61,12 +67,11 @@ func move(direction: Vector2, stength: float, speed: float = 0.0) -> float:
 	
 	return speed
 
-func _animate_move(direction: Vector2, speed: float, position_to_remove):
+func _animate_move(direction: Vector2, speed: float, position_to_remove: Vector2):
 	_moving = true
+	_moved_last_frame = true
 	_moving_direction = direction
 	_moving_speed = speed
-	
-	print(tween.is_active())
 	
 	node_to_move.position = -direction * Grid.GRID_SIZE
 	tween.interpolate_property(
@@ -81,3 +86,6 @@ func _animate_move(direction: Vector2, speed: float, position_to_remove):
 	_moving = false
 	
 	calculate_move()
+	
+	yield(get_tree(), "physics_frame")
+	_moved_last_frame = false

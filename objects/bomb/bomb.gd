@@ -4,7 +4,6 @@ var exploding = false
 
 func _ready():
 	node_to_move = $subnode
-	tween = $tween
 
 func get_mass() -> float:
 	return 1.0
@@ -21,4 +20,5 @@ func explode():
 		var entity = Grid.get_entity_at_position(get_grid_position() + d)
 		if entity != null and entity.has_method("explode"):
 			entity.explode()
+	
 	queue_free()

@@ -13,5 +13,4 @@ polygon = PoolVector2Array( -48, 48, -48, -48, 0, -48, 48, 0, 48, 48 )
 
 [node name="camera_2d" type="Camera2D" parent="subnode"]
 current = true
-
-[node name="tween" type="Tween" parent="."]
+process_mode = 0

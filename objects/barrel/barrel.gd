@@ -2,7 +2,6 @@ extends "res://objects/shared/physics_entity.gd"
 
 func _ready():
 	node_to_move = $subnode
-	tween = $tween
 
 func get_mass() -> float:
 	return 1.0
