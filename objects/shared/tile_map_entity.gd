@@ -13,7 +13,7 @@ func update_positions():
 	Grid.remove_entity(self)
 	for pos in get_used_cells():
 		var grid_pos = (to_global(map_to_world(pos)) / Grid.GRID_SIZE).round()
-		var flag = Grid.Flag.NONE
+		var flag = Grid.Flag.SOLID
 		match get_cellv(pos):
 			ladder_tile:
 				flag = Grid.Flag.LADDER

@@ -14,18 +14,28 @@ var _moving := false
 var _moving_direction : Vector2
 var _moving_speed : float
 var _moved_last_frame := false
+var _deferred_grid_registration := false
 
 func _enter_tree() -> void:
 	tween = Tween.new()
 	add_child(tween)
 	var grid_pos = get_grid_position()
-	Grid.add_entity_position(self, grid_pos)
 	global_position = (grid_pos + Vector2(0.5, 0.5)) * Grid.GRID_SIZE
+	
+	if !Grid.has_entity_at_position(grid_pos):
+		Grid.add_entity_position(self, grid_pos)
+	else:
+		_deferred_grid_registration = true
 
 func _exit_tree() -> void:
 	Grid.remove_entity(self)
 
 func _physics_process(_delta):
+	if _deferred_grid_registration:
+		var grid_pos = get_grid_position()
+		if !Grid.has_entity_at_position(grid_pos):
+			Grid.add_entity_position(self, grid_pos)
+			_deferred_grid_registration = false
 	if !_moving:
 		calculate_move()
 

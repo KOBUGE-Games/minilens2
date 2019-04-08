@@ -1,7 +1,7 @@
 extends Node
 
 enum Flag {
-	NONE = 0
+	SOLID = 0
 	LADDER = 1
 	ACID = 2
 }
@@ -14,7 +14,7 @@ var _positions = {} # position:flags => entity
 func _get_key(position: Vector2, flag: int):
 	return Vector3(position.x, position.y, flag)
 
-func add_entity_position(entity: Object, position: Vector2, flag: int = Flag.NONE) -> void:
+func add_entity_position(entity: Object, position: Vector2, flag: int = Flag.SOLID) -> void:
 	var key = _get_key(position, flag)
 	if key in _positions:
 		if entity != _positions[key]:
@@ -29,7 +29,7 @@ func add_entity_position(entity: Object, position: Vector2, flag: int = Flag.NON
 		_entities[entity] = []
 	_entities[entity].push_back(key)
 
-func remove_entity_position(entity: Object, position: Vector2, flag: int = Flag.NONE) -> void:
+func remove_entity_position(entity: Object, position: Vector2, flag: int = Flag.SOLID) -> void:
 	var key = _get_key(position, flag)
 	if not (entity in _entities):
 		return
@@ -42,11 +42,11 @@ func remove_entity_position(entity: Object, position: Vector2, flag: int = Flag.
 	if _entities[entity].size() == 0:
 		_entities.erase(entity)
 
-func get_entity_at_position(position: Vector2, flag: int = Flag.NONE) -> Object:
+func get_entity_at_position(position: Vector2, flag: int = Flag.SOLID) -> Object:
 	var key = _get_key(position, flag)
 	return _positions.get(key, null)
 
-func has_entity_at_position(position: Vector2, flag: int = Flag.NONE) -> bool:
+func has_entity_at_position(position: Vector2, flag: int = Flag.SOLID) -> bool:
 	var key = _get_key(position, flag)
 	return _positions.get(key, null) != null
 

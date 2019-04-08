@@ -13,3 +13,8 @@ texture = ExtResource( 1 )
 offset = Vector2( 0, 16 )
 region_enabled = true
 region_rect = Rect2( 0, 0, 96, 32 )
+
+[node name="acid" type="Sprite" parent="."]
+modulate = Color( 0.839216, 0.980392, 0.686275, 1 )
+position = Vector2( 192, 0 )
+texture = ExtResource( 1 )
