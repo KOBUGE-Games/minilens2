@@ -4,6 +4,7 @@ var was_in_acid = false
 export var sink_speed = 384
 
 func _ready():
+	Goals.add_goal(self, Goals.GoalType.BARREL)
 	node_to_move = $subnode
 
 func get_mass() -> float:
@@ -14,6 +15,8 @@ func calculate_move():
 	var is_acid = Grid.has_entity_at_position(get_grid_position(), Grid.Flag.ACID)
 	
 	if is_acid:
+		if !was_in_acid:
+			Goals.remove_goal(self)
 		was_in_acid = true
 	
 	if was_in_acid and !is_acid:

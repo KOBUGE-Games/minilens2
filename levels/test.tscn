@@ -23,11 +23,20 @@ position = Vector2( 336, 432 )
 [node name="barrel" parent="." instance=ExtResource( 4 )]
 position = Vector2( 528, 432 )
 
+[node name="barrel2" parent="." instance=ExtResource( 4 )]
+position = Vector2( 1008, 816 )
+
 [node name="bomb_pickup" parent="." instance=ExtResource( 5 )]
 position = Vector2( 528, 816 )
 
 [node name="flower" parent="." instance=ExtResource( 6 )]
-position = Vector2( 1056, 816 )
+position = Vector2( 1488, 816 )
+
+[node name="flower2" parent="." instance=ExtResource( 6 )]
+position = Vector2( 1296, 816 )
+
+[node name="flower3" parent="." instance=ExtResource( 6 )]
+position = Vector2( 48, 816 )
 
 [node name="unstable_ground" parent="." instance=ExtResource( 7 )]
 position = Vector2( 816, 912 )

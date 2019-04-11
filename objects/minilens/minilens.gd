@@ -51,6 +51,11 @@ func calculate_move():
 	
 	if _moving:
 		moved_after_bomb = true
+	
+	if Goals.get_total_goals_left() <= 0:
+		print("Passed!")
+		$subnode/polygon_2d.color = Color(0.882812, 0.625523, 0.224152)
+		set_physics_process(false)
 
 func add_bombs(amount: int):
 	bombs_available += amount

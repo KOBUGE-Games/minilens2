@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Grid="*res://world/grid.gd"
+Goals="*res://world/goals.gd"
 
 [display]
 
