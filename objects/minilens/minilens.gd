@@ -10,6 +10,12 @@ func _ready():
 	node_to_move = $subnode
 
 func calculate_move():
+	if Goals.get_total_goals_left() <= 0:
+		print("Passed!")
+		$subnode/polygon_2d.color = Color(0.882812, 0.625523, 0.224152)
+		set_physics_process(false)
+		return
+	
 	var is_acid_below = Grid.has_entity_at_position(get_grid_position() + Vector2(0, 1), Grid.Flag.ACID)
 	var is_acid = Grid.has_entity_at_position(get_grid_position(), Grid.Flag.ACID)
 	var is_ladder_below = Grid.has_entity_at_position(get_grid_position() + Vector2(0, 1), Grid.Flag.LADDER)
@@ -51,11 +57,6 @@ func calculate_move():
 	
 	if _moving:
 		moved_after_bomb = true
-	
-	if Goals.get_total_goals_left() <= 0:
-		print("Passed!")
-		$subnode/polygon_2d.color = Color(0.882812, 0.625523, 0.224152)
-		set_physics_process(false)
 
 func add_bombs(amount: int):
 	bombs_available += amount

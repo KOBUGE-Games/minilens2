@@ -4,6 +4,7 @@
 
 [node name="minilens" type="Node2D"]
 script = ExtResource( 1 )
+walk_speed = 288.0
 
 [node name="subnode" type="Node2D" parent="."]
 
