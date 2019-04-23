@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://world/editor_camera.gd" type="Script" id=1]
+
+[node name="editor_camera" type="Camera2D"]
+pause_mode = 2
+current = true
+drag_margin_h_enabled = false
+drag_margin_v_enabled = false
+script = ExtResource( 1 )

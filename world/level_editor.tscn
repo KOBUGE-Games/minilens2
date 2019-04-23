@@ -1,0 +1,131 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://world/level_editor.gd" type="Script" id=1]
+
+[sub_resource type="ButtonGroup" id=1]
+
+[node name="level_editor" type="CanvasLayer"]
+pause_mode = 2
+script = ExtResource( 1 )
+
+[node name="mouse_stop" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="parts" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="top_bar" type="PanelContainer" parent="parts"]
+margin_right = 1920.0
+margin_bottom = 34.0
+
+[node name="h_box_container" type="HBoxContainer" parent="parts/top_bar"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1913.0
+margin_bottom = 27.0
+
+[node name="label" type="Label" parent="parts/top_bar/h_box_container"]
+margin_top = 3.0
+margin_right = 1858.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+text = "Level editor -"
+align = 1
+
+[node name="play" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 1862.0
+margin_right = 1882.0
+margin_bottom = 20.0
+toggle_mode = true
+text = ">"
+
+[node name="close" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 1886.0
+margin_right = 1906.0
+margin_bottom = 20.0
+text = "X"
+
+[node name="middle" type="HSplitContainer" parent="parts"]
+margin_top = 38.0
+margin_right = 1920.0
+margin_bottom = 1080.0
+mouse_filter = 2
+size_flags_vertical = 3
+
+[node name="left_panel" type="PanelContainer" parent="parts/middle"]
+margin_right = 76.0
+margin_bottom = 1042.0
+
+[node name="v_box_container" type="VBoxContainer" parent="parts/middle/left_panel"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 69.0
+margin_bottom = 1035.0
+
+[node name="label" type="Label" parent="parts/middle/left_panel/v_box_container"]
+margin_right = 62.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Parts"
+align = 1
+
+[node name="parts" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 18.0
+margin_right = 62.0
+margin_bottom = 18.0
+
+[node name="h_separator" type="HSeparator" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 22.0
+margin_right = 62.0
+margin_bottom = 26.0
+
+[node name="label2" type="Label" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 30.0
+margin_right = 62.0
+margin_bottom = 44.0
+size_flags_horizontal = 3
+text = "Modes"
+align = 1
+
+[node name="modes" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 48.0
+margin_right = 62.0
+margin_bottom = 116.0
+
+[node name="erase" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
+margin_right = 62.0
+margin_bottom = 20.0
+toggle_mode = true
+group = SubResource( 1 )
+text = "Erase"
+
+[node name="add" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
+margin_top = 24.0
+margin_right = 62.0
+margin_bottom = 44.0
+toggle_mode = true
+group = SubResource( 1 )
+text = "Add"
+
+[node name="replace" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
+margin_top = 48.0
+margin_right = 62.0
+margin_bottom = 68.0
+toggle_mode = true
+pressed = true
+group = SubResource( 1 )
+text = "Replace"
+
+[node name="placeholder" type="Control" parent="parts/middle"]
+margin_left = 88.0
+margin_right = 1920.0
+margin_bottom = 1042.0
+mouse_filter = 2
+[connection signal="gui_input" from="mouse_stop" to="." method="process_input"]
+[connection signal="toggled" from="parts/top_bar/h_box_container/play" to="." method="play_toggled"]
+[connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/erase" to="." method="select_erase"]
+[connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/add" to="." method="select_nonerase"]
+[connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/replace" to="." method="select_nonerase"]

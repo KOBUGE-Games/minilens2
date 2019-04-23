@@ -2,6 +2,10 @@ extends Node2D
 
 const TileMapEntity = preload("res://objects/shared/tile_map_entity.gd")
 const TileScenes = {
+	air = "",
+	solid = "tile",
+	ladder = "tile",
+	acid = "tile",
 	minilens = "res://objects/minilens/minilens.tscn",
 	barrel = "res://objects/barrel/barrel.tscn",
 	flower = "res://objects/flower/flower.tscn",
@@ -22,23 +26,40 @@ func clear():
 		child_to_remove.queue_free()
 	tile_map.clear()
 
+func clear_tile(pos: Vector2):
+	if tile_map.get_cellv(pos) != -1:
+		tile_map.set_cellv(pos, -1)
+		tile_map.update_positions()
+	for child in get_children():
+		if child.has_method("get_grid_position"):
+			if child.get_grid_position().distance_squared_to(pos) < 0.01:
+				child.queue_free()
+		elif child is Node2D and not (child is TileMap):
+			if child.position.distance_squared_to(tile_map.map_to_world(pos)) < 0.01:
+				child.queue_free()
+			
+
 func add_tile(pos: Vector2, type: String):
-	if type == "air":
-		pass
-	elif type == "solid":
-		tile_map.set_cellv(pos, 0)
-	elif type == "acid":
-		tile_map.set_cellv(pos, tile_map.acid_tile)
-	elif type == "ladder":
-		tile_map.set_cellv(pos, tile_map.ladder_tile)
-	elif TileScenes.has(type):
-		var scene := load(TileScenes[type]) as PackedScene
-		var instance := scene.instance() as Node2D
-		instance.position = pos * tile_map.cell_size
-		add_child(instance)
-	else:
+	if not TileScenes.has(type):
 		push_error("Unknown tile type: " + type)
 		return
+	
+	var scene_path := TileScenes[type] as String
+	if scene_path == "":
+		pass
+	elif scene_path == "tile":
+		if type == "solid":
+			tile_map.set_cellv(pos, 0)
+		elif type == "acid":
+			tile_map.set_cellv(pos, tile_map.acid_tile)
+		elif type == "ladder":
+			tile_map.set_cellv(pos, tile_map.ladder_tile)
+		tile_map.update_positions()
+	else:
+		var scene := load(scene_path) as PackedScene
+		var instance := scene.instance() as Node2D
+		instance.position = (pos + Vector2(0.5, 0.5)) * tile_map.cell_size
+		add_child(instance)
 
 func load_from_file(path: String, level_name: String = "") -> void:
 	var file := File.new()
@@ -85,4 +106,4 @@ func load_from_file(path: String, level_name: String = "") -> void:
 			for definition in definitions[map_lines[y][x]]:
 				add_tile(Vector2(x, y), definition)
 	
-	tile_map.update_positions()
+	tile_map._update_positions()

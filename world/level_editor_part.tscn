@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="ButtonGroup" id=1]
+resource_local_to_scene = false
+
+[node name="part" type="Button"]
+margin_top = 18.0
+margin_right = 43.0
+margin_bottom = 38.0
+toggle_mode = true
+group = SubResource( 1 )
+text = "Solid"
