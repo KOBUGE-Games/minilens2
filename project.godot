@@ -16,7 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="minilens2"
-run/main_scene="res://world/level.tscn"
+run/main_scene="res://world/level_editor.tscn"
 config/icon="res://icon.png"
 
 [autoload]
