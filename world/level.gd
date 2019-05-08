@@ -13,17 +13,32 @@ const TileScenes = {
 	primed_bomb = "res://objects/bomb/bomb.tscn",
 	unstable = "res://objects/unstable_ground/unstable_ground.tscn",
 }
+const TileLetters = { # Lists of characters in order of how well they represent the tile
+	air = ".\'",
+	solid = "#@$%?S",
+	ladder = "=%\'\"|L",
+	acid = "~\\/xX",
+	minilens = "M><RmPp",
+	barrel = "BbA[{}]HNR",
+	flower = "*Ff",
+	bomb = "!%b",
+	primed_bomb = "@",
+	unstable = "^@%?",
+}
 
 onready var tile_map := $tile_map as TileMapEntity
+var SceneTiles = {}
 
 func _ready():
-	load_from_file("res://levels/test.level")
+	for tile in TileScenes:
+		SceneTiles[TileScenes[tile]] = tile
+	pass #load_from_file("res://levels/test.level")
 
 func clear():
-	while get_child_count() > 2:
-		var child_to_remove := get_child(1) # Do not remove child 0, it is the tilemap
-		remove_child(child_to_remove)
-		child_to_remove.queue_free()
+	for child in get_children():
+		if child.has_method("get_grid_position"):
+			remove_child(child)
+			child.queue_free()
 	tile_map.clear()
 
 func clear_tile(pos: Vector2):
@@ -34,10 +49,6 @@ func clear_tile(pos: Vector2):
 		if child.has_method("get_grid_position"):
 			if child.get_grid_position().distance_squared_to(pos) < 0.01:
 				child.queue_free()
-		elif child is Node2D and not (child is TileMap):
-			if child.position.distance_squared_to(tile_map.map_to_world(pos)) < 0.01:
-				child.queue_free()
-			
 
 func add_tile(pos: Vector2, type: String):
 	if not TileScenes.has(type):
@@ -63,7 +74,8 @@ func add_tile(pos: Vector2, type: String):
 
 func load_from_file(path: String, level_name: String = "") -> void:
 	var file := File.new()
-	file.open(path, File.READ)
+	if file.open(path, File.READ) != OK:
+		return
 	while not file.eof_reached():
 		var line := file.get_line()
 		if line.begins_with("[level ") and line.ends_with("]"):
@@ -96,6 +108,8 @@ func load_from_file(path: String, level_name: String = "") -> void:
 	# Read what we needed to, close the file
 	file.close()
 	
+	clear()
+	
 	# Build level
 	for y in range(map_lines.size()):
 		for x in range(map_lines[y].length()):
@@ -107,3 +121,109 @@ func load_from_file(path: String, level_name: String = "") -> void:
 				add_tile(Vector2(x, y), definition)
 	
 	tile_map._update_positions()
+
+func save_to_file(path: String, level_name: String = "") -> void:
+	var tiles := {}
+	
+	# Collect information from the level
+	
+	for cell in tile_map.get_used_cells():
+		var tile := tile_map.get_cellv(cell)
+		if !tiles.has(cell):
+			tiles[cell] = ""
+		else:
+			tiles[cell] += " + "
+		if tile == tile_map.acid_tile:
+			tiles[cell] += "acid"
+		elif tile == tile_map.ladder_tile:
+			tiles[cell] += "ladder"
+		else:
+			tiles[cell] += "solid"
+	
+	for child in get_children():
+		var filename = child.filename
+		if filename == "" or !SceneTiles.has(filename):
+			continue
+		
+		var cell := Vector2()
+		if child.has_method("get_grid_position"):
+			cell = child.get_grid_position().round()
+		elif child is Node2D and not (child is TileMap):
+			cell = tile_map.world_to_map(child.position)
+		else:
+			continue
+		
+		if !tiles.has(cell):
+			tiles[cell] = ""
+		else:
+			tiles[cell] += " + "
+		tiles[cell] += SceneTiles[filename]
+	
+	# Assign letters to tiles (can be combined with next pass)
+	
+	var bounds := Rect2()
+	var definitions := {"air": "."}
+	var characters_used := {".": true}
+	for pos in tiles:
+		if !definitions.has(tiles[pos]):
+			var picked_letter = pick_letter(tiles[pos].split(" + "), characters_used)
+			characters_used[picked_letter] = true
+			definitions[tiles[pos]] = picked_letter
+		if bounds == Rect2():
+			bounds = Rect2(pos, Vector2(0, 0))
+		else:
+			bounds = bounds.expand(pos)
+	
+	# Write everything out
+	
+	# TODO: Add logic for appending/replacing in pack
+	var file := File.new()
+	if file.open(path, File.WRITE) != OK:
+		return
+	file.store_line("[level " + level_name + "]")
+	
+	for y in range(bounds.position.y, bounds.end.y + 1):
+		var line = ""
+		for x in range(bounds.position.x, bounds.end.x + 1):
+			var pos = Vector2(x, y)
+			if tiles.has(pos):
+				line += definitions[tiles[pos]]
+			else:
+				line += definitions["air"]
+		file.store_line(line)
+	
+	file.store_line("")
+	
+	for definition in definitions:
+		var line = definitions[definition] + " = " + definition
+		file.store_line(line)
+	
+	file.close()
+
+func pick_letter(tiles: PoolStringArray, used: Dictionary) -> String:
+	var scored_letters := {}
+	
+	for tile in tiles:
+		var letters := TileLetters[tile] as String
+		for i in range(letters.length()):
+			var letter := letters[i]
+			if !scored_letters.has(letter):
+				scored_letters[letter] = 0
+			scored_letters[letter] += letters.length() - i
+	
+	var best_letter_score := 0
+	var best_letter := ""
+	for letter in scored_letters:
+		if !used.has(letter) and best_letter_score < scored_letters[letter]:
+			best_letter = letter
+			best_letter_score = scored_letters[letter]
+	
+	if best_letter != "":
+		return best_letter
+	
+	for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz":
+		if !used.has(letter):
+			return letter
+	
+	assert(false)
+	return " "

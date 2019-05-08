@@ -27,7 +27,19 @@ margin_top = 7.0
 margin_right = 1913.0
 margin_bottom = 27.0
 
+[node name="open" type="Button" parent="parts/top_bar/h_box_container"]
+margin_right = 55.0
+margin_bottom = 20.0
+text = "Open.."
+
+[node name="save" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 59.0
+margin_right = 108.0
+margin_bottom = 20.0
+text = "Save.."
+
 [node name="label" type="Label" parent="parts/top_bar/h_box_container"]
+margin_left = 112.0
 margin_top = 3.0
 margin_right = 1858.0
 margin_bottom = 17.0
@@ -125,6 +137,8 @@ margin_right = 1920.0
 margin_bottom = 1042.0
 mouse_filter = 2
 [connection signal="gui_input" from="mouse_stop" to="." method="process_input"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/open" to="." method="open_level_dialog"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/save" to="." method="save_level_dialog"]
 [connection signal="toggled" from="parts/top_bar/h_box_container/play" to="." method="play_toggled"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/erase" to="." method="select_erase"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/add" to="." method="select_nonerase"]

@@ -1,3 +1,20 @@
+[level Overlap Test]
+.......b......
+.....=##f.....
+...M.=........
+.f###..=%.....
+..............
+~~~~~~~~~~~~~~
+
+. = air
+# = solid
+= = ladder
+M = minilens
+~ = acid
+b = barrel
+f = flower
+% = ladder + bomb
+
 [level Test Level]
 ..................
 ....M.B...........
@@ -19,20 +36,3 @@ M = minilens
 B = barrel
 f = flower
 b = bomb
-
-[level Overlap Test]
-.......b......
-.....=##f.....
-...M.=........
-.f###..=%.....
-..............
-~~~~~~~~~~~~~~
-
-. = air
-# = solid
-= = ladder
-M = minilens
-~ = acid
-b = barrel
-f = flower
-% = ladder + bomb

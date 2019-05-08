@@ -76,3 +76,41 @@ func process_input(event: InputEvent):
 				apply_tile(start + i * (delta / steps))
 			return
 	camera.handle_input(event)
+
+
+func open_level_dialog():
+	var dialog := FileDialog.new()
+	dialog.mode = FileDialog.MODE_OPEN_FILE
+	if OS.has_feature("debug"):
+		dialog.access = FileDialog.ACCESS_RESOURCES
+	else:
+		dialog.access = FileDialog.ACCESS_USERDATA
+	dialog.filters = ["*.level", "*.pack"]
+	add_child(dialog)
+	dialog.popup_centered_ratio()
+	yield(dialog, "popup_hide")
+	var file: String = dialog.current_path
+	dialog.queue_free()
+	if file == "": return
+	
+	# TODO: Add logic for reading packs
+	level.load_from_file(file)
+
+
+func save_level_dialog():
+	var dialog := FileDialog.new()
+	dialog.mode = FileDialog.MODE_SAVE_FILE
+	if OS.has_feature("debug"):
+		dialog.access = FileDialog.ACCESS_RESOURCES
+	else:
+		dialog.access = FileDialog.ACCESS_USERDATA
+	dialog.filters = ["*.level", "*.pack"]
+	add_child(dialog)
+	dialog.popup_centered_ratio()
+	yield(dialog, "popup_hide")
+	var file: String = dialog.current_path
+	dialog.queue_free()
+	if file == "": return
+	
+	# TODO: Add logic for saving packs
+	level.save_to_file(file)
