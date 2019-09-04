@@ -1,7 +1,7 @@
 extends TileMap
 
-onready var ladder_tile = tile_set.find_tile_by_name("ladder")
-onready var acid_tile = tile_set.find_tile_by_name("acid")
+onready var ladder_tile := tile_set.find_tile_by_name("ladder")
+onready var acid_tile := tile_set.find_tile_by_name("acid")
 
 var update_queued = false
 

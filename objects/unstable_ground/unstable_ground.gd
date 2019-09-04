@@ -1,10 +1,10 @@
 extends Node2D
 
-var previous_entity = null
+var previous_entity: Object = null
 
 func _enter_tree() -> void:
-	var grid_pos = get_grid_position()
-	global_position = (get_grid_position() + Vector2(0.5, 0.5)) * Grid.GRID_SIZE
+	var grid_pos := get_grid_position()
+	global_position = (grid_pos + Vector2(0.5, 0.5)) * Grid.GRID_SIZE
 	Grid.add_entity_position(self, grid_pos)
 
 func _exit_tree() -> void:
@@ -17,8 +17,8 @@ func try_break(entity: Object) -> bool:
 	else:
 		return false
 
-func _physics_process(_delta):
-	var entity = Grid.get_entity_at_position(get_grid_position() + Vector2(0, -1))
+func _physics_process(_delta: float) -> void:
+	var entity := Grid.get_entity_at_position(get_grid_position() + Vector2(0, -1))
 	if previous_entity != entity:
 		if previous_entity != null:
 			if try_break(previous_entity):

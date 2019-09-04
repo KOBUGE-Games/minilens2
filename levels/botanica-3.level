@@ -13,9 +13,9 @@
 ......##.......
 
 . = air
-* = flower
-= = ladder
-M = minilens
 # = solid
+= = ladder
 1 = teleport:1:1
+* = flower
+M = minilens
 ^ = unstable

@@ -70,7 +70,7 @@ func set_tile_editor(tile_editor_scene):
 		if tile_editor == null or tile_editor.filename != tile_editor_scene:
 			if tile_editor != null:
 				tile_editor.queue_free()
-			tile_editor = load(tile_editor_scene).instance()
+			tile_editor = (load(tile_editor_scene) as PackedScene).instance()
 			tile_editor_container.add_child(tile_editor)
 			tile_editor_container.show()
 
@@ -79,7 +79,8 @@ func apply_tile(pos: Vector2):
 		level.clear_tile(pos)
 	if modes_group.get_pressed_button().name != "erase":
 		if tile_editor != null:
-			level.add_tile(pos, parts_group.get_pressed_button().name, tile_editor.get_tile_properties())
+			var properties = tile_editor.call("get_tile_properties")
+			level.add_tile(pos, parts_group.get_pressed_button().name, properties)
 		else:
 			level.add_tile(pos, parts_group.get_pressed_button().name)
 

@@ -8,6 +8,7 @@ const TileScenes = {
 	acid = "tile",
 	minilens = "res://objects/minilens/minilens.tscn",
 	barrel = "res://objects/barrel/barrel.tscn",
+	box = "res://objects/box/box.tscn",
 	flower = "res://objects/flower/flower.tscn",
 	bomb = "res://objects/bomb/bomb_pickup.tscn",
 	primed_bomb = "res://objects/bomb/bomb.tscn",
@@ -24,6 +25,7 @@ const TileLetters = { # Lists of characters in order of how well they represent 
 	acid = "~\\/xX",
 	minilens = "M><RmPp",
 	barrel = "BbA[{}]HNR",
+	box = "X$@#&",
 	flower = "*Ff",
 	bomb = "!%b",
 	primed_bomb = "@",
@@ -35,8 +37,8 @@ const TileLetters = { # Lists of characters in order of how well they represent 
 }
 
 onready var tile_map := $tile_map as TileMapEntity
-var SceneTiles = {}
-var level_name = "Unnamed"
+var SceneTiles := {}
+var level_name := "Unnamed"
 
 func _ready():
 	for tile in TileScenes:
@@ -80,7 +82,7 @@ func add_tile(pos: Vector2, type: String, properties: Array = []):
 		var instance := scene.instance() as Node2D
 		instance.position = (pos + Vector2(0.5, 0.5)) * tile_map.cell_size
 		if instance.has_method("set_tile_properties"):
-			instance.set_tile_properties(properties)
+			instance.call("set_tile_properties", properties)
 		add_child(instance)
 
 func load_from_file(path: String, name_in_pack: String = "") -> void:
@@ -159,7 +161,10 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 		else:
 			tiles[cell] += "solid"
 	
-	for child in get_children():
+	var children = get_children()
+	children.sort_custom(self, "_position_sort")
+	
+	for child in children:
 		var filename = child.filename
 		if filename == "" or !SceneTiles.has(filename):
 			continue
@@ -218,13 +223,17 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 	
 	file.store_line("")
 	
-	var definition_keys = definitions.keys()
-	definition_keys.sort()
-	for definition in definition_keys:
+	for definition in definitions:
 		var line = definitions[definition] + " = " + definition
 		file.store_line(line)
 	
 	file.close()
+
+func _position_sort(a: Node, b: Node) -> bool:
+	if a is Node2D and b is Node2D:
+		return a.global_position.y < b.global_position.y or (a.global_position.y == b.global_position.y and a.global_position.x < b.global_position.x)
+	else:
+		return int(a is Node2D) < int(b is Node2D)
 
 func pick_letter(tiles: PoolStringArray, used: Dictionary) -> String:
 	var scored_letters := {}
