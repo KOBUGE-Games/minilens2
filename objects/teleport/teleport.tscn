@@ -7,6 +7,14 @@ script = ExtResource( 1 )
 
 [node name="subnode" type="Node2D" parent="."]
 
+[node name="connections" type="Line2D" parent="subnode"]
+z_index = -1
+width = 20.0
+default_color = Color( 0.490196, 0.839216, 0.894118, 1 )
+texture_mode = 2
+begin_cap_mode = 1
+end_cap_mode = 1
+
 [node name="polygon_2d" type="Polygon2D" parent="subnode"]
 color = Color( 0.368627, 0.815686, 0.972549, 1 )
 polygon = PoolVector2Array( 32, 32, -32, 32, -32, -32, 32, -32 )
