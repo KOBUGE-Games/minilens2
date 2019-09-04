@@ -89,9 +89,11 @@ func add_tile(pos: Vector2, type: String, properties: Array = []):
 		assert(instance.get_grid_position().distance_squared_to(pos) < 0.01)
 	level_acid.update_acid()
 
-func get_bounds() -> Rect2:
+func get_bounds(ignore_acid: bool = false) -> Rect2:
 	var bounds := Rect2()
 	for cell in tile_map.get_used_cells():
+		if ignore_acid and tile_map.get_cellv(cell) == tile_map.acid_tile:
+			continue
 		if bounds == Rect2():
 			bounds = Rect2(cell, Vector2(0, 0))
 		else:

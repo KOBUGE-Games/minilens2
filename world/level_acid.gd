@@ -19,7 +19,7 @@ func update_acid():
 
 func _update_acid():
 	var level := get_owner() as Level
-	var bounds := level.get_bounds()
+	var bounds := level.get_bounds(true)
 	global_position = (Vector2(bounds.position.x - size.x, bounds.end.y + 1 + size.y)) * Grid.GRID_SIZE
 	texture_rect.rect_size = Vector2(bounds.size.x + 1 + size.x * 2, 1) * Grid.GRID_SIZE
 	

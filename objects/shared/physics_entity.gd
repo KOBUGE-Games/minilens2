@@ -94,7 +94,7 @@ func confirm_move(direction: Vector2) -> float:
 
 func _finish_move() -> void:
 	var entity_ahead = Grid.get_entity_at_position(get_grid_position() + _moving_direction)
-	if entity_ahead != null:
+	if entity_ahead != null and entity_ahead.has_method("confirm_move"):
 		_moving_speed = entity_ahead.confirm_move(_moving_direction)
 		if _moving_speed <= 0.0:
 			_moving_priority = Priority.NONE

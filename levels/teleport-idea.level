@@ -1,8 +1,8 @@
 [level Telestack]
-........B....#..
-........B....2..
+........B....#.!
+........B....2==
 ........B.......
-....B...B..!....
+....B...B..*....
 ....B...B====..!
 ....B.M.B.....==
 ....B.=##A......
@@ -15,8 +15,9 @@
 # = solid
 = = ladder
 B = barrel
-2 = teleport:2:2
 ! = bomb
+2 = teleport:2:2
+* = flower
 M = minilens
 A = teleport:1:2
 3 = teleport:3:3
