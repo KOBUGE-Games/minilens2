@@ -18,6 +18,7 @@ var _deferred_grid_registration := false
 
 func _enter_tree() -> void:
 	tween = Tween.new()
+	tween.playback_process_mode = Tween.TWEEN_PROCESS_PHYSICS
 	add_child(tween)
 	var grid_pos = get_grid_position()
 	global_position = (grid_pos + Vector2(0.5, 0.5)) * Grid.GRID_SIZE
@@ -37,7 +38,7 @@ func _physics_process(_delta):
 			Grid.add_entity_position(self, grid_pos)
 			_deferred_grid_registration = false
 	if !_moving:
-		calculate_move()
+		call_deferred("calculate_move")
 
 func calculate_move() -> void: pass
 
@@ -95,7 +96,7 @@ func _animate_move(direction: Vector2, speed: float, position_to_remove: Vector2
 	Grid.remove_entity_position(self, position_to_remove)
 	_moving = false
 	
-	calculate_move()
+	call_deferred("calculate_move")
 	
 	yield(get_tree(), "physics_frame")
 	_moved_last_frame = false

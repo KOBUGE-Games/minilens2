@@ -12,6 +12,10 @@ const TileScenes = {
 	bomb = "res://objects/bomb/bomb_pickup.tscn",
 	primed_bomb = "res://objects/bomb/bomb.tscn",
 	unstable = "res://objects/unstable_ground/unstable_ground.tscn",
+	teleport = "res://objects/teleport/teleport.tscn",
+}
+const TilePropertyEditors = {
+	teleport = "res://objects/teleport/teleport_editor.tscn",
 }
 const TileLetters = { # Lists of characters in order of how well they represent the tile
 	air = ".\'",
@@ -24,10 +28,15 @@ const TileLetters = { # Lists of characters in order of how well they represent 
 	bomb = "!%b",
 	primed_bomb = "@",
 	unstable = "^@%?",
+	"teleport:1:1": "1A",
+	"teleport:2:2": "2B",
+	"teleport:3:3": "3C",
+	"teleport:4:4": "4D",
 }
 
 onready var tile_map := $tile_map as TileMapEntity
 var SceneTiles = {}
+var level_name = "Unnamed"
 
 func _ready():
 	for tile in TileScenes:
@@ -50,7 +59,7 @@ func clear_tile(pos: Vector2):
 			if child.get_grid_position().distance_squared_to(pos) < 0.01:
 				child.queue_free()
 
-func add_tile(pos: Vector2, type: String):
+func add_tile(pos: Vector2, type: String, properties: Array = []):
 	if not TileScenes.has(type):
 		push_error("Unknown tile type: " + type)
 		return
@@ -70,9 +79,11 @@ func add_tile(pos: Vector2, type: String):
 		var scene := load(scene_path) as PackedScene
 		var instance := scene.instance() as Node2D
 		instance.position = (pos + Vector2(0.5, 0.5)) * tile_map.cell_size
+		if instance.has_method("set_tile_properties"):
+			instance.set_tile_properties(properties)
 		add_child(instance)
 
-func load_from_file(path: String, level_name: String = "") -> void:
+func load_from_file(path: String, name_in_pack: String = "") -> void:
 	var file := File.new()
 	if file.open(path, File.READ) != OK:
 		return
@@ -80,7 +91,8 @@ func load_from_file(path: String, level_name: String = "") -> void:
 		var line := file.get_line()
 		if line.begins_with("[level ") and line.ends_with("]"):
 			var found_level_name := line.substr(7, line.length() - 8)
-			if found_level_name == level_name or level_name == "":
+			if found_level_name == name_in_pack or name_in_pack == "":
+				level_name = found_level_name
 				break
 	# At level's tilemap now, continue parsing
 	var map_lines := []
@@ -118,11 +130,18 @@ func load_from_file(path: String, level_name: String = "") -> void:
 				continue
 			
 			for definition in definitions[map_lines[y][x]]:
-				add_tile(Vector2(x, y), definition)
+				var properties = Array(definition.split(":"))
+				var tile = properties.pop_front()
+				add_tile(Vector2(x, y), tile, properties)
 	
 	tile_map._update_positions()
 
-func save_to_file(path: String, level_name: String = "") -> void:
+func save_to_file(path: String, name_in_pack: String = "") -> void:
+	if name_in_pack == "":
+		name_in_pack = level_name
+	else:
+		level_name = name_in_pack
+	
 	var tiles := {}
 	
 	# Collect information from the level
@@ -158,6 +177,11 @@ func save_to_file(path: String, level_name: String = "") -> void:
 		else:
 			tiles[cell] += " + "
 		tiles[cell] += SceneTiles[filename]
+		
+		if child.has_method("get_tile_properties"):
+			for property in child.get_tile_properties():
+				tiles[cell] += ":"
+				tiles[cell] += property
 	
 	# Assign letters to tiles (can be combined with next pass)
 	
@@ -180,7 +204,7 @@ func save_to_file(path: String, level_name: String = "") -> void:
 	var file := File.new()
 	if file.open(path, File.WRITE) != OK:
 		return
-	file.store_line("[level " + level_name + "]")
+	file.store_line("[level " + name_in_pack + "]")
 	
 	for y in range(bounds.position.y, bounds.end.y + 1):
 		var line = ""
@@ -194,7 +218,9 @@ func save_to_file(path: String, level_name: String = "") -> void:
 	
 	file.store_line("")
 	
-	for definition in definitions:
+	var definition_keys = definitions.keys()
+	definition_keys.sort()
+	for definition in definition_keys:
 		var line = definitions[definition] + " = " + definition
 		file.store_line(line)
 	
@@ -204,6 +230,8 @@ func pick_letter(tiles: PoolStringArray, used: Dictionary) -> String:
 	var scored_letters := {}
 	
 	for tile in tiles:
+		if !TileLetters.has(tile):
+			continue
 		var letters := TileLetters[tile] as String
 		for i in range(letters.length()):
 			var letter := letters[i]

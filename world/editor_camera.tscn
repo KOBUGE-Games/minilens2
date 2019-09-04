@@ -5,6 +5,7 @@
 [node name="editor_camera" type="Camera2D"]
 pause_mode = 2
 current = true
+zoom = Vector2( 2, 2 )
 drag_margin_h_enabled = false
 drag_margin_v_enabled = false
 script = ExtResource( 1 )
