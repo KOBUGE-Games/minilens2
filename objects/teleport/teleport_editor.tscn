@@ -2,6 +2,8 @@
 
 [ext_resource path="res://objects/teleport/teleport_editor.gd" type="Script" id=1]
 
+
+
 [node name="teleport_editor" type="VBoxContainer"]
 margin_right = 90.0
 margin_bottom = 24.0

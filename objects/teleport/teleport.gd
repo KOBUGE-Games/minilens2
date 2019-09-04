@@ -1,8 +1,9 @@
 extends Node2D
 
+export var teleport_speed := 1768.0
 export var group = 1
 export var target_group = 1
-var _blocked = false
+var _blocked := 1
 
 func _enter_tree() -> void:
 	add_to_group(str("teleport_", group))
@@ -22,15 +23,16 @@ func _physics_process(_delta):
 			valid_targets.push_back(target)
 	
 	var over_entity = Grid.get_entity_at_position(grid_pos)
-	if over_entity != null and over_entity.has_method("get_grid_position") and over_entity.has_method("get_mass"):
+	if over_entity != null:
 		$subnode/disabled.visible = true
-		if valid_targets.size() > 0 and not _blocked:
+		if valid_targets.size() > 0 and _blocked <= 0:
 			var target = valid_targets[randi() % valid_targets.size()]
-			if over_entity.move(target.get_grid_position() - over_entity.get_grid_position(), over_entity.get_mass()) > 0.0:
-				target._blocked = true
+			if over_entity.move(target.get_grid_position() - get_grid_position(), PhysicsEntity.Priority.TELEPORT, teleport_speed) > 0.0:
+				target._blocked = 2
 	else:
-		_blocked = false
+		_blocked -= 1
 		$subnode/disabled.visible = (valid_targets.size() == 0)
+	
 
 func get_grid_position() -> Vector2:
 	return (global_position / Grid.GRID_SIZE - Vector2(0.5, 0.5)).round()

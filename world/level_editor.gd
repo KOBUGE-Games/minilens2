@@ -98,7 +98,7 @@ func process_input(event: InputEvent):
 			var delta := end - start
 			var steps := ceil(delta.length() + 1)
 			for i in range(steps):
-				apply_tile(start + i * (delta / steps))
+				apply_tile((start + i * (delta / steps)).floor())
 			return
 	camera.handle_input(event)
 

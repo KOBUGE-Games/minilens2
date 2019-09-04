@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Node2D",
+"class": "PhysicsEntity",
+"language": "GDScript",
+"path": "res://objects/shared/physics_entity.gd"
+} ]
 _global_script_class_icons={
-
+"PhysicsEntity": ""
 }
 
 [application]

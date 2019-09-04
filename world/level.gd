@@ -86,6 +86,7 @@ func add_tile(pos: Vector2, type: String, properties: Array = []):
 		if instance.has_method("set_tile_properties"):
 			instance.call("set_tile_properties", properties)
 		add_child(instance)
+		assert(instance.get_grid_position().distance_squared_to(pos) < 0.01)
 	level_acid.update_acid()
 
 func get_bounds() -> Rect2:

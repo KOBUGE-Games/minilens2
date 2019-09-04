@@ -29,5 +29,5 @@ func _update_positions():
 		Grid.add_entity_position(self, grid_pos, flag)
 	update_queued = false
 
-func move(_direction: Vector2, _stength: float, _speed: float = 0.0) -> float:
+func move(_direction: Vector2, _priority: int, _speed: float, _strength: float = -1.0) -> float:
 	return -INF

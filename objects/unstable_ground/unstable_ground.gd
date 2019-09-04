@@ -25,8 +25,8 @@ func _physics_process(_delta: float) -> void:
 				set_physics_process(false)
 		previous_entity = entity
 
-func move(_direction: Vector2, _stength: float, _speed: float = 0.0) -> float:
-	return -INF
-
 func get_grid_position() -> Vector2:
 	return (global_position / Grid.GRID_SIZE - Vector2(0.5, 0.5)).round()
+
+func move(_direction: Vector2, _priority: int, _speed: float, _strength: float = -1.0) -> float:
+	return -INF
