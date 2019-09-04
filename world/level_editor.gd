@@ -22,7 +22,7 @@ func _ready():
 		level = preload("res://world/level.tscn").instance() as Level
 		get_tree().root.call_deferred("add_child", level)
 	
-	level.add_child(camera)
+	get_tree().root.call_deferred("add_child", camera)
 	camera.call_deferred("make_current")
 	
 	for tile_type in level.TileScenes:

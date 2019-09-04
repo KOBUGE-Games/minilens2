@@ -37,6 +37,7 @@ const TileLetters = { # Lists of characters in order of how well they represent 
 }
 
 onready var tile_map := $tile_map as TileMapEntity
+onready var level_acid := $acid
 var SceneTiles := {}
 var level_name := "Unnamed"
 
@@ -56,6 +57,7 @@ func clear_tile(pos: Vector2):
 	if tile_map.get_cellv(pos) != -1:
 		tile_map.set_cellv(pos, -1)
 		tile_map.update_positions()
+	level_acid.update_acid()
 	for child in get_children():
 		if child.has_method("get_grid_position"):
 			if child.get_grid_position().distance_squared_to(pos) < 0.01:
@@ -84,6 +86,30 @@ func add_tile(pos: Vector2, type: String, properties: Array = []):
 		if instance.has_method("set_tile_properties"):
 			instance.call("set_tile_properties", properties)
 		add_child(instance)
+	level_acid.update_acid()
+
+func get_bounds() -> Rect2:
+	var bounds := Rect2()
+	for cell in tile_map.get_used_cells():
+		if bounds == Rect2():
+			bounds = Rect2(cell, Vector2(0, 0))
+		else:
+			bounds = bounds.expand(cell)
+	
+	for child in get_children():
+		var cell := Vector2()
+		if child.has_method("get_grid_position"):
+			cell = child.get_grid_position().round()
+		elif child is Node2D and child.get_owner() != self:
+			cell = tile_map.world_to_map(child.position)
+		else:
+			continue
+		
+		if bounds == Rect2():
+			bounds = Rect2(cell, Vector2(0, 0))
+		else:
+			bounds = bounds.expand(cell)
+	return bounds
 
 func load_from_file(path: String, name_in_pack: String = "") -> void:
 	var file := File.new()
@@ -137,6 +163,7 @@ func load_from_file(path: String, name_in_pack: String = "") -> void:
 				add_tile(Vector2(x, y), tile, properties)
 	
 	tile_map._update_positions()
+	level_acid._update_acid()
 
 func save_to_file(path: String, name_in_pack: String = "") -> void:
 	if name_in_pack == "":
@@ -172,7 +199,7 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 		var cell := Vector2()
 		if child.has_method("get_grid_position"):
 			cell = child.get_grid_position().round()
-		elif child is Node2D and not (child is TileMap):
+		elif child is Node2D and child.get_owner() != self:
 			cell = tile_map.world_to_map(child.position)
 		else:
 			continue
