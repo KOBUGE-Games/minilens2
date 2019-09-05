@@ -1,0 +1,10 @@
+[level Tricks]
+.*M.......B
+**#########
+##########.
+
+. = air
+* = flower
+M = minilens
+B = barrel
+# = solid

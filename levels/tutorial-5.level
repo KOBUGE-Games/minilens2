@@ -1,0 +1,16 @@
+[level Time for Bombs]
+...BM........
+..=#.........
+..=##*.*...B.
+..=....=####.
+..=....=...!.
+#######%#####
+
+. = air
+B = barrel
+M = minilens
+= = ladder
+# = solid
+* = flower
+! = bomb
+% = ladder + flower

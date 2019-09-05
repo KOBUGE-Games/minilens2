@@ -1,0 +1,16 @@
+[level Planned Bombing]
+.....=#########=...
+.....=.......!.=.!.
+....M=B.B....B.b...
+...*.=###.##.######
+***#############...
+####...............
+
+. = air
+= = ladder
+# = solid
+! = bomb
+M = minilens
+B = barrel
+b = ladder + barrel
+* = flower

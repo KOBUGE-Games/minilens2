@@ -1,0 +1,11 @@
+[level Flowers]
+M..B.......
+########...
+.####.....*
+...#...####
+
+M = minilens
+. = air
+B = barrel
+# = solid
+* = flower

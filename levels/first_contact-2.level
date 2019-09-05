@@ -1,0 +1,17 @@
+[level Simple Tricks]
+.......M......
+......####....
+..##.B====B.##
+..=.X#....###.
+...=..........
+.*..=.!.X.....
+##..*###......
+
+. = air
+M = minilens
+# = solid
+B = barrel
+= = ladder
+X = box
+* = flower
+! = bomb

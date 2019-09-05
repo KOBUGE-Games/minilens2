@@ -52,6 +52,8 @@ func clear():
 			remove_child(child)
 			child.queue_free()
 	tile_map.clear()
+	tile_map._update_positions()
+	level_acid._update_acid()
 
 func clear_tile(pos: Vector2):
 	if tile_map.get_cellv(pos) != -1:

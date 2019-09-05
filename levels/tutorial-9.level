@@ -1,0 +1,18 @@
+[level Blue Orbs]
+.#=M.B..
+.#####..
+.#......
+.#......
+.#...#..
+.#A.....
+.#######
+......C.
+########
+
+. = air
+# = solid
+= = ladder
+M = minilens
+B = barrel
+A = teleport:1:2
+C = teleport:2:1

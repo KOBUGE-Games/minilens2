@@ -1,0 +1,17 @@
+[level Static Boxes]
+..=...M....
+.XX=.......
+.*X=.!.=B.#
+..#X#X#X###
+X..........
+##########.
+.#.........
+
+. = air
+= = ladder
+M = minilens
+X = box
+* = flower
+! = bomb
+B = barrel
+# = solid

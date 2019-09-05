@@ -1,0 +1,25 @@
+[level Into the Vulkan]
+...B..........
+..%X..........
+..b...........
+..MB......!...
+..##~~##X###..
+....##........
+...B..........
+..########..*.
+............=.
+............=.
+............=#
+#############.
+
+. = air
+B = barrel
+% = ladder + bomb
+X = box
+b = ladder + barrel
+M = ladder + minilens
+! = bomb
+# = solid
+~ = acid
+* = flower
+= = ladder
