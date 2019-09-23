@@ -31,8 +31,29 @@ func clear_pos(pos: Vector2) -> void:
 			if child.get_grid_position().distance_squared_to(pos) < 0.01:
 				child.queue_free()
 
+func get_pos(pos: Vector2) -> Dictionary:
+	var r := {
+		"tile": tile_map.get_cellv(pos) +1, # +1 because IDs start at 0 but tile map starts at -1
+		"entities": [],
+		"entities_properties": []
+	}
+	
+	for child in get_children():
+		if child.has_method("get_grid_position"):
+			if child.get_grid_position().distance_squared_to(pos) < 0.01:
+				var child_filename : String = child.filename
+				var entity_id : int = Objects.EntityByScenePath[child_filename]
+				r.entities.push_back(entity_id)
+				
+				var properties : Array
+				if child.has_method("get_tile_properties") :
+					child.get_tile_properties()
+				r.entities_properties.push_back( properties )
+	
+	return r
+
 func add_tile(pos: Vector2, type: int) -> void:
-	tile_map.set_cellv(pos, type-1)
+	tile_map.set_cellv(pos, type-1) # -1 because IDs start at 0 but tile map starts at -1
 	tile_map.update_positions()
 	level_acid.update_acid()
 	
@@ -47,7 +68,18 @@ func add_entity(pos: Vector2, type: int, properties: Array = []) -> void:
 	add_child(instance)
 	assert(instance.get_grid_position().distance_squared_to(pos) < 0.01)
 	level_acid.update_acid()
-	
+func remove_entity(pos: Vector2, type: int, properties: Array = []) -> void:
+	for child in get_children():
+		if child.has_method("get_grid_position"):
+			if child.get_grid_position().distance_squared_to(pos) < 0.01 :
+				var filename : String = child.filename
+				var scene_path : String = Objects.EntityData[type].scene_path
+				var entity_properties : Array = []
+				if child.has_method("get_tile_properties"):
+					entity_properties = child.get_tile_properties()
+				if scene_path == filename && entity_properties == properties :
+					child.queue_free()
+					
 	
 func get_bounds(ignore_acid: bool = false) -> Rect2:
 	var bounds := Rect2()

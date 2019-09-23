@@ -38,29 +38,46 @@ margin_right = 108.0
 margin_bottom = 24.0
 text = "Save.."
 
-[node name="spacer" type="Control" parent="parts/top_bar/h_box_container"]
+[node name="v_separator" type="VSeparator" parent="parts/top_bar/h_box_container"]
 margin_left = 112.0
-margin_right = 836.0
+margin_right = 116.0
+margin_bottom = 24.0
+
+[node name="redo" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 120.0
+margin_right = 164.0
+margin_bottom = 24.0
+text = "Redo"
+
+[node name="undo" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 168.0
+margin_right = 214.0
+margin_bottom = 24.0
+text = "Undo"
+
+[node name="spacer" type="Control" parent="parts/top_bar/h_box_container"]
+margin_left = 218.0
+margin_right = 889.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="label" type="Label" parent="parts/top_bar/h_box_container"]
-margin_left = 840.0
+margin_left = 893.0
 margin_top = 5.0
-margin_right = 925.0
+margin_right = 978.0
 margin_bottom = 19.0
 text = "Level editor -"
 align = 2
 
 [node name="level_name" type="LineEdit" parent="parts/top_bar/h_box_container"]
-margin_left = 929.0
-margin_right = 1129.0
+margin_left = 982.0
+margin_right = 1182.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 200, 0 )
 placeholder_text = "Name"
 
 [node name="spacer2" type="Control" parent="parts/top_bar/h_box_container"]
-margin_left = 1133.0
+margin_left = 1186.0
 margin_right = 1857.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
@@ -193,7 +210,9 @@ mouse_filter = 2
 [connection signal="gui_input" from="mouse_stop" to="." method="process_input"]
 [connection signal="pressed" from="parts/top_bar/h_box_container/open" to="." method="open_level_dialog"]
 [connection signal="pressed" from="parts/top_bar/h_box_container/save" to="." method="save_level_dialog"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/redo" to="." method="redo"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/undo" to="." method="undo"]
 [connection signal="toggled" from="parts/top_bar/h_box_container/play" to="." method="play_toggled"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/erase" to="." method="select_erase"]
-[connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/add" to="." method="select_nonerase"]
+[connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/add" to="." method="select_add"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/replace" to="." method="select_nonerase"]
