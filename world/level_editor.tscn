@@ -95,14 +95,14 @@ margin_top = 7.0
 margin_right = 69.0
 margin_bottom = 1031.0
 
-[node name="label" type="Label" parent="parts/middle/left_panel/v_box_container"]
+[node name="label_tiles" type="Label" parent="parts/middle/left_panel/v_box_container"]
 margin_right = 62.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
-text = "Parts"
+text = "Tiles"
 align = 1
 
-[node name="parts" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
+[node name="tiles" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
 margin_top = 18.0
 margin_right = 62.0
 margin_bottom = 18.0
@@ -112,18 +112,36 @@ margin_top = 22.0
 margin_right = 62.0
 margin_bottom = 26.0
 
-[node name="label2" type="Label" parent="parts/middle/left_panel/v_box_container"]
+[node name="label_entities" type="Label" parent="parts/middle/left_panel/v_box_container"]
 margin_top = 30.0
 margin_right = 62.0
 margin_bottom = 44.0
+size_flags_horizontal = 3
+text = "Entities"
+align = 1
+
+[node name="entities" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 48.0
+margin_right = 62.0
+margin_bottom = 48.0
+
+[node name="h_separator2" type="HSeparator" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 52.0
+margin_right = 62.0
+margin_bottom = 56.0
+
+[node name="label2" type="Label" parent="parts/middle/left_panel/v_box_container"]
+margin_top = 60.0
+margin_right = 62.0
+margin_bottom = 74.0
 size_flags_horizontal = 3
 text = "Modes"
 align = 1
 
 [node name="modes" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
-margin_top = 48.0
+margin_top = 78.0
 margin_right = 62.0
-margin_bottom = 116.0
+margin_bottom = 146.0
 
 [node name="erase" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
 margin_right = 62.0
@@ -149,17 +167,17 @@ pressed = true
 group = SubResource( 1 )
 text = "Replace"
 
-[node name="tile_editor" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
+[node name="entity_editor" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
 visible = false
 margin_top = 120.0
 margin_right = 66.0
 margin_bottom = 142.0
 
-[node name="h_separator2" type="HSeparator" parent="parts/middle/left_panel/v_box_container/tile_editor"]
+[node name="h_separator2" type="HSeparator" parent="parts/middle/left_panel/v_box_container/entity_editor"]
 margin_right = 66.0
 margin_bottom = 4.0
 
-[node name="label3" type="Label" parent="parts/middle/left_panel/v_box_container/tile_editor"]
+[node name="label3" type="Label" parent="parts/middle/left_panel/v_box_container/entity_editor"]
 margin_top = 8.0
 margin_right = 66.0
 margin_bottom = 22.0

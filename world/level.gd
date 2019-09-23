@@ -1,52 +1,17 @@
 extends Node2D
 
 const TileMapEntity = preload("res://objects/shared/tile_map_entity.gd")
-const TileScenes = {
-	air = "",
-	solid = "tile",
-	ladder = "tile",
-	acid = "tile",
-	minilens = "res://objects/minilens/minilens.tscn",
-	barrel = "res://objects/barrel/barrel.tscn",
-	box = "res://objects/box/box.tscn",
-	flower = "res://objects/flower/flower.tscn",
-	bomb = "res://objects/bomb/bomb_pickup.tscn",
-	primed_bomb = "res://objects/bomb/bomb.tscn",
-	unstable = "res://objects/unstable_ground/unstable_ground.tscn",
-	teleport = "res://objects/teleport/teleport.tscn",
-}
-const TilePropertyEditors = {
-	teleport = "res://objects/teleport/teleport_editor.tscn",
-}
-const TileLetters = { # Lists of characters in order of how well they represent the tile
-	air = ".\'",
-	solid = "#@$%?S",
-	ladder = "=%\'\"|L",
-	acid = "~\\/xX",
-	minilens = "M><RmPp",
-	barrel = "BbA[{}]HNR",
-	box = "X$@#&",
-	flower = "*Ff",
-	bomb = "!%b",
-	primed_bomb = "@",
-	unstable = "^@%?",
-	"teleport:1:1": "1A",
-	"teleport:2:2": "2B",
-	"teleport:3:3": "3C",
-	"teleport:4:4": "4D",
-}
+
+const Objects = preload("res://objects/Objects.gd")
 
 onready var tile_map := $tile_map as TileMapEntity
 onready var level_acid := $acid
-var SceneTiles := {}
 var level_name := "Unnamed"
 
-func _ready():
-	for tile in TileScenes:
-		SceneTiles[TileScenes[tile]] = tile
+func _ready() -> void:
 	pass #load_from_file("res://levels/test.level")
 
-func clear():
+func clear() -> void:
 	for child in get_children():
 		if child.has_method("get_grid_position"):
 			remove_child(child)
@@ -55,42 +20,35 @@ func clear():
 	tile_map._update_positions()
 	level_acid._update_acid()
 
-func clear_tile(pos: Vector2):
+func clear_pos(pos: Vector2) -> void:
 	if tile_map.get_cellv(pos) != -1:
 		tile_map.set_cellv(pos, -1)
 		tile_map.update_positions()
 	level_acid.update_acid()
+	
 	for child in get_children():
 		if child.has_method("get_grid_position"):
 			if child.get_grid_position().distance_squared_to(pos) < 0.01:
 				child.queue_free()
 
-func add_tile(pos: Vector2, type: String, properties: Array = []):
-	if not TileScenes.has(type):
-		push_error("Unknown tile type: " + type)
-		return
-	
-	var scene_path := TileScenes[type] as String
-	if scene_path == "":
-		pass
-	elif scene_path == "tile":
-		if type == "solid":
-			tile_map.set_cellv(pos, 0)
-		elif type == "acid":
-			tile_map.set_cellv(pos, tile_map.acid_tile)
-		elif type == "ladder":
-			tile_map.set_cellv(pos, tile_map.ladder_tile)
-		tile_map.update_positions()
-	else:
-		var scene := load(scene_path) as PackedScene
-		var instance := scene.instance() as Node2D
-		instance.position = (pos + Vector2(0.5, 0.5)) * tile_map.cell_size
-		if instance.has_method("set_tile_properties"):
-			instance.call("set_tile_properties", properties)
-		add_child(instance)
-		assert(instance.get_grid_position().distance_squared_to(pos) < 0.01)
+func add_tile(pos: Vector2, type: int) -> void:
+	tile_map.set_cellv(pos, type-1)
+	tile_map.update_positions()
 	level_acid.update_acid()
+	
+func add_entity(pos: Vector2, type: int, properties: Array = []) -> void:
+	var scene_path : String = Objects.EntityData[type].scene_path
 
+	var scene := load(scene_path) as PackedScene
+	var instance := scene.instance() as Node2D
+	instance.position = (pos + Vector2(0.5, 0.5)) * tile_map.cell_size
+	if instance.has_method("set_tile_properties"):
+		instance.call("set_tile_properties", properties)
+	add_child(instance)
+	assert(instance.get_grid_position().distance_squared_to(pos) < 0.01)
+	level_acid.update_acid()
+	
+	
 func get_bounds(ignore_acid: bool = false) -> Rect2:
 	var bounds := Rect2()
 	for cell in tile_map.get_used_cells():
@@ -164,8 +122,11 @@ func load_from_file(path: String, name_in_pack: String = "") -> void:
 			
 			for definition in definitions[map_lines[y][x]]:
 				var properties = Array(definition.split(":"))
-				var tile = properties.pop_front()
-				add_tile(Vector2(x, y), tile, properties)
+				var object_name : String = properties.pop_front()
+				if Objects.is_tile_name(object_name) :
+					add_tile(Vector2(x, y), Objects.TileByName[object_name] )
+				else:
+					add_entity(Vector2(x, y), Objects.EntityByName[object_name], properties)
 	
 	tile_map._update_positions()
 	level_acid._update_acid()
@@ -197,8 +158,8 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 	children.sort_custom(self, "_position_sort")
 	
 	for child in children:
-		var filename = child.filename
-		if filename == "" or !SceneTiles.has(filename):
+		var filename : String = child.filename
+		if filename == "" or Objects.EntityByScenePath.has(filename):
 			continue
 		
 		var cell := Vector2()
@@ -213,7 +174,9 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 			tiles[cell] = ""
 		else:
 			tiles[cell] += " + "
-		tiles[cell] += SceneTiles[filename]
+		
+		var entity_id : int = Objects.EntityByScenePath[filename]
+		tiles[cell] += Objects.EntityData[entity_id].name as String
 		
 		if child.has_method("get_tile_properties"):
 			for property in child.get_tile_properties():
@@ -271,9 +234,16 @@ func pick_letter(tiles: PoolStringArray, used: Dictionary) -> String:
 	var scored_letters := {}
 	
 	for tile in tiles:
-		if !TileLetters.has(tile):
-			continue
-		var letters := TileLetters[tile] as String
+		var properties = Array(tile.split(":"))
+		var object_name : String = properties.pop_front()
+		var letters : String
+		if Objects.is_tile_name(object_name) :
+			var id : int = Objects.TileByName[object_name]
+			letters = Objects.TileData[id].letters
+		else:
+			var id : int = Objects.EntityByName[object_name]
+			letters = Objects.EntityData[id].letters
+			
 		for i in range(letters.length()):
 			var letter := letters[i]
 			if !scored_letters.has(letter):
