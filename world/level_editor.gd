@@ -7,6 +7,8 @@ onready var tiles_container = $parts/middle/left_panel/v_box_container/tiles
 onready var entities_container = $parts/middle/left_panel/v_box_container/entities
 onready var erase_button = $parts/middle/left_panel/v_box_container/modes/erase
 onready var replace_button = $parts/middle/left_panel/v_box_container/modes/replace
+onready var redo_button = $parts/top_bar/h_box_container/redo
+onready var undo_button = $parts/top_bar/h_box_container/undo
 onready var entity_editor_container = $parts/middle/left_panel/v_box_container/entity_editor
 onready var level_name = $parts/top_bar/h_box_container/level_name
 onready var level := get_tree().current_scene as Level
@@ -111,13 +113,25 @@ func select_add():
 	if selected_object_type == Objects.ObjectType.TILE:
 		default_entity_button.pressed = true
 
+var undo_redo_max_version : int = 1
+# called when registering any action in undo_redo
+func do():
+	redo_button.disabled = true
+	undo_button.disabled = false
+	undo_redo_max_version = undo_redo.get_version() 
 # called when clicking on undo button
 func undo():
 	undo_redo.undo()
-
+	redo_button.disabled = false
+	if undo_redo.get_version() == 1:
+		undo_button.disabled = true
 # called when clicking on redo button
 func redo():
 	undo_redo.redo()
+	undo_button.disabled = false
+	if undo_redo.get_version() == undo_redo_max_version:
+		redo_button.disabled = true
+		
 
 # called when clicking any entity with an entity editor
 func set_entity_editor(entity_editor_scene: String) -> void:
@@ -171,6 +185,7 @@ func add_entity(pos: Vector2, is_drag: bool, selected_object: int, properties: A
 	undo_redo.add_do_method(self, "do_add_entity", pos, selected_object, properties)
 	undo_redo.add_undo_method(self, "undo_add_entity", pos, selected_object, properties)
 	undo_redo.commit_action()
+	do()
 
 func do_add_entity(pos: Vector2, selected_object: int, properties: Array) -> void:
 	level.add_entity(pos, selected_object, properties)
@@ -187,6 +202,7 @@ func erase(pos: Vector2, is_drag: bool) -> void:
 	var entities_properties = r.entities_properties
 	undo_redo.add_undo_method(self, "undo_erase", pos, tile, entities, entities_properties)
 	undo_redo.commit_action()
+	do()
 
 func do_erase(pos: Vector2) -> void:
 	level.clear_pos(pos)
@@ -205,6 +221,7 @@ func replace_entity(pos: Vector2, is_drag: bool, selected_object: int, propertie
 	var entities_properties = r.entities_properties
 	undo_redo.add_undo_method(self, "undo_replace_entity", pos, tile, entities, entities_properties)
 	undo_redo.commit_action()
+	do()
 
 func do_replace_entity(pos: Vector2, selected_object: int, properties: Array) -> void:
 	level.clear_pos(pos)
@@ -226,6 +243,7 @@ func replace_tile(pos: Vector2, is_drag: bool, selected_object: int) -> void:
 	var entities_properties = r.entities_properties
 	undo_redo.add_undo_method(self, "undo_replace_tile", pos, tile, entities, entities_properties)
 	undo_redo.commit_action()
+	do()
 
 func do_replace_tile(pos: Vector2, selected_object: int) -> void:
 	level.clear_pos(pos)
