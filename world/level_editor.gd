@@ -181,7 +181,10 @@ func apply(pos: Vector2, is_drag: bool) -> void:
 
 
 func add_entity(pos: Vector2, is_drag: bool, selected_object: int, properties: Array) -> void:
-	undo_redo.create_action("add_entity", UndoRedo.MERGE_ALL if is_drag else UndoRedo.MERGE_DISABLE)
+	var undo_redo_merge_mode : int = UndoRedo.MERGE_DISABLE
+	if is_drag :
+		undo_redo_merge_mode = UndoRedo.MERGE_ALL
+	undo_redo.create_action("add_entity", undo_redo_merge_mode)
 	undo_redo.add_do_method(self, "do_add_entity", pos, selected_object, properties)
 	undo_redo.add_undo_method(self, "undo_add_entity", pos, selected_object, properties)
 	undo_redo.commit_action()
@@ -194,13 +197,19 @@ func undo_add_entity(pos: Vector2, selected_object: int, properties: Array) -> v
 	level.remove_entity(pos, selected_object, properties)
 
 func erase(pos: Vector2, is_drag: bool) -> void:
-	undo_redo.create_action("erase", UndoRedo.MERGE_ALL if is_drag else UndoRedo.MERGE_DISABLE)
+	var undo_redo_merge_mode : int = UndoRedo.MERGE_DISABLE
+	if is_drag :
+		undo_redo_merge_mode = UndoRedo.MERGE_ALL
+	undo_redo.create_action("erase", undo_redo_merge_mode)
+	
 	undo_redo.add_do_method(self, "do_erase", pos)
-	var r: Dictionary = level.get_pos(pos)
-	var tile: int = r.tile
-	var entities: Array = r.entities
-	var entities_properties = r.entities_properties
+	
+	var result: Dictionary = level.get_pos(pos)
+	var tile: int = result.tile
+	var entities: Array = result.entities
+	var entities_properties = result.entities_properties
 	undo_redo.add_undo_method(self, "undo_erase", pos, tile, entities, entities_properties)
+	
 	undo_redo.commit_action()
 	do()
 
@@ -213,13 +222,19 @@ func undo_erase(pos: Vector2, tile: int, entities: Array, entities_properties: A
 		level.add_entity(pos, entities[i], entities_properties[i])
 	
 func replace_entity(pos: Vector2, is_drag: bool, selected_object: int, properties: Array) -> void:
-	undo_redo.create_action("replace_entity", UndoRedo.MERGE_ALL if is_drag else UndoRedo.MERGE_DISABLE)
+	var undo_redo_merge_mode : int = UndoRedo.MERGE_DISABLE
+	if is_drag :
+		undo_redo_merge_mode = UndoRedo.MERGE_ALL
+	undo_redo.create_action("replace_entity", undo_redo_merge_mode)
+	
 	undo_redo.add_do_method(self, "do_replace_entity", pos, selected_object, properties)
-	var r: Dictionary = level.get_pos(pos)
-	var tile: int = r.tile
-	var entities: Array = r.entities
-	var entities_properties = r.entities_properties
+	
+	var result: Dictionary = level.get_pos(pos)
+	var tile: int = result.tile
+	var entities: Array = result.entities
+	var entities_properties = result.entities_properties
 	undo_redo.add_undo_method(self, "undo_replace_entity", pos, tile, entities, entities_properties)
+	
 	undo_redo.commit_action()
 	do()
 
@@ -235,13 +250,19 @@ func undo_replace_entity(pos: Vector2, tile: int, entities: Array, entities_prop
 
 
 func replace_tile(pos: Vector2, is_drag: bool, selected_object: int) -> void:
-	undo_redo.create_action("replace_tile", UndoRedo.MERGE_ALL if is_drag else UndoRedo.MERGE_DISABLE)
+	var undo_redo_merge_mode : int = UndoRedo.MERGE_DISABLE
+	if is_drag :
+		undo_redo_merge_mode = UndoRedo.MERGE_ALL
+	undo_redo.create_action("replace_tile", undo_redo_merge_mode)
+	
 	undo_redo.add_do_method(self, "do_replace_tile", pos, selected_object)
-	var r: Dictionary = level.get_pos(pos)
-	var tile: int = r.tile
-	var entities: Array = r.entities
-	var entities_properties = r.entities_properties
+	
+	var result: Dictionary = level.get_pos(pos)
+	var tile: int = result.tile
+	var entities: Array = result.entities
+	var entities_properties = result.entities_properties
 	undo_redo.add_undo_method(self, "undo_replace_tile", pos, tile, entities, entities_properties)
+	
 	undo_redo.commit_action()
 	do()
 
@@ -261,7 +282,7 @@ func process_input(event: InputEvent):
 	if event is InputEventMouseButton:
 		if event.is_pressed() and event.button_index == BUTTON_LEFT:
 			var transformed := level.tile_map.make_input_local(event) as InputEventMouseButton
-			var pos = (transformed.position / level.tile_map.cell_size).floor()
+			var pos := level.world_pos_to_grid_pos( transformed.position )
 			apply(pos, false)
 			current_drag_positions = {pos: true}
 			return
@@ -269,8 +290,8 @@ func process_input(event: InputEvent):
 	if event is InputEventMouseMotion:
 		if event.button_mask & BUTTON_MASK_LEFT:
 			var transformed := level.tile_map.make_input_local(event) as InputEventMouseMotion
-			var start := ((transformed.position - transformed.relative) / level.tile_map.cell_size).floor()
-			var end := (transformed.position / level.tile_map.cell_size).floor()
+			var start := level.world_pos_to_grid_pos( transformed.position - transformed.relative )
+			var end := level.world_pos_to_grid_pos( transformed.position )
 			var delta := end - start
 			var steps := ceil(delta.length() + 1)
 			for i in range(steps):

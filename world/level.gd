@@ -105,6 +105,9 @@ func get_bounds(ignore_acid: bool = false) -> Rect2:
 			bounds = bounds.expand(cell)
 	return bounds
 
+func world_pos_to_grid_pos( pos: Vector2 ) -> Vector2:
+	return (pos / tile_map.cell_size).floor()
+
 func load_from_file(path: String, name_in_pack: String = "") -> void:
 	var file := File.new()
 	if file.open(path, File.READ) != OK:
