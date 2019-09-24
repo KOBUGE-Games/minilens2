@@ -2,8 +2,6 @@ extends Node2D
 
 const TileMapEntity = preload("res://objects/shared/tile_map_entity.gd")
 
-const Objects = preload("res://objects/Objects.gd")
-
 onready var tile_map := $tile_map as TileMapEntity
 onready var level_acid := $acid
 var level_name := "Unnamed"
@@ -32,8 +30,8 @@ func clear_pos(pos: Vector2) -> void:
 				child.queue_free()
 
 func get_pos(pos: Vector2) -> Dictionary:
-	var r := {
-		"tile": tile_map.get_cellv(pos) +1, # +1 because IDs start at 0 but tile map starts at -1
+	var result := {
+		"tile": tile_map.get_cellv(pos) + 1, # +1 because IDs start at 0 but tile map starts at -1
 		"entities": [],
 		"entities_properties": []
 	}
@@ -41,25 +39,25 @@ func get_pos(pos: Vector2) -> Dictionary:
 	for child in get_children():
 		if child.has_method("get_grid_position"):
 			if child.get_grid_position().distance_squared_to(pos) < 0.01:
-				var child_filename : String = child.filename
-				var entity_id : int = Objects.EntityByScenePath[child_filename]
-				r.entities.push_back(entity_id)
+				var child_filename: String = child.filename
+				var entity_id: int = Objects.EntityByScenePath[child_filename]
+				result.entities.push_back(entity_id)
 				
-				var properties : Array
-				if child.has_method("get_tile_properties") :
+				var properties := []
+				if child.has_method("get_tile_properties"):
 					child.get_tile_properties()
-				r.entities_properties.push_back( properties )
+				result.entities_properties.push_back(properties)
 	
-	return r
+	return result
 
 func add_tile(pos: Vector2, type: int) -> void:
-	tile_map.set_cellv(pos, type-1) # -1 because IDs start at 0 but tile map starts at -1
+	tile_map.set_cellv(pos, type - 1) # -1 because IDs start at 0 but tile map starts at -1
 	tile_map.update_positions()
 	level_acid.update_acid()
-	
-func add_entity(pos: Vector2, type: int, properties: Array = []) -> void:
-	var scene_path : String = Objects.EntityData[type].scene_path
 
+func add_entity(pos: Vector2, type: int, properties: Array = []) -> void:
+	var scene_path: String = Objects.EntityData[type].scene_path
+	
 	var scene := load(scene_path) as PackedScene
 	var instance := scene.instance() as Node2D
 	instance.position = (pos + Vector2(0.5, 0.5)) * tile_map.cell_size
@@ -68,19 +66,20 @@ func add_entity(pos: Vector2, type: int, properties: Array = []) -> void:
 	add_child(instance)
 	assert(instance.get_grid_position().distance_squared_to(pos) < 0.01)
 	level_acid.update_acid()
+
 func remove_entity(pos: Vector2, type: int, properties: Array = []) -> void:
 	for child in get_children():
 		if child.has_method("get_grid_position"):
-			if child.get_grid_position().distance_squared_to(pos) < 0.01 :
-				var filename : String = child.filename
-				var scene_path : String = Objects.EntityData[type].scene_path
-				var entity_properties : Array = []
+			if child.get_grid_position().distance_squared_to(pos) < 0.01:
+				var filename: String = child.filename
+				var scene_path: String = Objects.EntityData[type].scene_path
+				var entity_properties: Array = []
 				if child.has_method("get_tile_properties"):
 					entity_properties = child.get_tile_properties()
-				if scene_path == filename && entity_properties == properties :
+				if scene_path == filename && entity_properties == properties:
 					child.queue_free()
-					
-	
+
+
 func get_bounds(ignore_acid: bool = false) -> Rect2:
 	var bounds := Rect2()
 	for cell in tile_map.get_used_cells():
@@ -154,9 +153,9 @@ func load_from_file(path: String, name_in_pack: String = "") -> void:
 			
 			for definition in definitions[map_lines[y][x]]:
 				var properties = Array(definition.split(":"))
-				var object_name : String = properties.pop_front()
-				if Objects.is_tile_name(object_name) :
-					add_tile(Vector2(x, y), Objects.TileByName[object_name] )
+				var object_name: String = properties.pop_front()
+				if Objects.is_tile_name(object_name):
+					add_tile(Vector2(x, y), Objects.TileByName[object_name])
 				else:
 					add_entity(Vector2(x, y), Objects.EntityByName[object_name], properties)
 	
@@ -190,8 +189,9 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 	children.sort_custom(self, "_position_sort")
 	
 	for child in children:
-		var filename : String = child.filename
-		if filename == "" or Objects.EntityByScenePath.has(filename):
+		var filename: String = child.filename
+		if filename == "" or not Objects.EntityByScenePath.has(filename):
+			print(child.filename)
 			continue
 		
 		var cell := Vector2()
@@ -207,7 +207,7 @@ func save_to_file(path: String, name_in_pack: String = "") -> void:
 		else:
 			tiles[cell] += " + "
 		
-		var entity_id : int = Objects.EntityByScenePath[filename]
+		var entity_id: int = Objects.EntityByScenePath[filename]
 		tiles[cell] += Objects.EntityData[entity_id].name as String
 		
 		if child.has_method("get_tile_properties"):
@@ -267,13 +267,13 @@ func pick_letter(tiles: PoolStringArray, used: Dictionary) -> String:
 	
 	for tile in tiles:
 		var properties = Array(tile.split(":"))
-		var object_name : String = properties.pop_front()
-		var letters : String
-		if Objects.is_tile_name(object_name) :
-			var id : int = Objects.TileByName[object_name]
+		var object_name: String = properties.pop_front()
+		var letters: String
+		if Objects.is_tile_name(object_name):
+			var id: int = Objects.TileByName[object_name]
 			letters = Objects.TileData[id].letters
 		else:
-			var id : int = Objects.EntityByName[object_name]
+			var id: int = Objects.EntityByName[object_name]
 			letters = Objects.EntityData[id].letters
 			
 		for i in range(letters.length()):
