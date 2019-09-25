@@ -321,6 +321,10 @@ func open_level_dialog():
 	# TODO: Add logic for reading packs
 	level.load_from_file(file)
 	level_name.text = level.level_name
+	
+	undo_redo.clear_history()
+	undo_button.disabled = true
+	redo_button.disabled = true
 
 func save_level_dialog():
 	var dialog := FileDialog.new()
