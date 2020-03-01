@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://world/level_editor.gd" type="Script" id=1]
 
@@ -38,6 +38,14 @@ scancode = 90
 
 [sub_resource type="ShortCut" id=8]
 shortcut = SubResource( 7 )
+
+[sub_resource type="InputEventKey" id=10]
+control = true
+command = true
+scancode = 66
+
+[sub_resource type="ShortCut" id=11]
+shortcut = SubResource( 10 )
 
 [sub_resource type="ButtonGroup" id=9]
 
@@ -98,39 +106,42 @@ disabled = true
 shortcut = SubResource( 8 )
 text = "Undo"
 
-[node name="spacer" type="Control" parent="parts/top_bar/h_box_container"]
+[node name="current_action" type="Label" parent="parts/top_bar/h_box_container"]
+modulate = Color( 1, 1, 1, 0.184314 )
 margin_left = 218.0
-margin_right = 889.0
-margin_bottom = 24.0
+margin_top = 5.0
+margin_right = 880.0
+margin_bottom = 19.0
 size_flags_horizontal = 3
 
 [node name="label" type="Label" parent="parts/top_bar/h_box_container"]
-margin_left = 893.0
+margin_left = 884.0
 margin_top = 5.0
-margin_right = 978.0
+margin_right = 969.0
 margin_bottom = 19.0
 text = "Level editor -"
 align = 2
 
 [node name="level_name" type="LineEdit" parent="parts/top_bar/h_box_container"]
-margin_left = 982.0
-margin_right = 1182.0
+margin_left = 973.0
+margin_right = 1173.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 200, 0 )
 placeholder_text = "Name"
 
 [node name="spacer2" type="Control" parent="parts/top_bar/h_box_container"]
-margin_left = 1186.0
-margin_right = 1857.0
+margin_left = 1177.0
+margin_right = 1839.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="play" type="Button" parent="parts/top_bar/h_box_container"]
-margin_left = 1861.0
+margin_left = 1843.0
 margin_right = 1881.0
 margin_bottom = 24.0
 toggle_mode = true
-text = ">"
+shortcut = SubResource( 11 )
+text = "Play"
 
 [node name="close" type="Button" parent="parts/top_bar/h_box_container"]
 margin_left = 1885.0
@@ -138,7 +149,7 @@ margin_right = 1905.0
 margin_bottom = 24.0
 text = "X"
 
-[node name="middle" type="HSplitContainer" parent="parts"]
+[node name="middle" type="HBoxContainer" parent="parts"]
 margin_top = 42.0
 margin_right = 1920.0
 margin_bottom = 1080.0
@@ -190,7 +201,7 @@ margin_top = 52.0
 margin_right = 62.0
 margin_bottom = 56.0
 
-[node name="label2" type="Label" parent="parts/middle/left_panel/v_box_container"]
+[node name="label_modes" type="Label" parent="parts/middle/left_panel/v_box_container"]
 margin_top = 60.0
 margin_right = 62.0
 margin_bottom = 74.0
@@ -201,7 +212,7 @@ align = 1
 [node name="modes" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
 margin_top = 78.0
 margin_right = 62.0
-margin_bottom = 146.0
+margin_bottom = 170.0
 
 [node name="erase" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
 margin_right = 62.0
@@ -227,29 +238,30 @@ pressed = true
 group = SubResource( 9 )
 text = "Replace"
 
+[node name="pick" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
+margin_top = 72.0
+margin_right = 62.0
+margin_bottom = 92.0
+toggle_mode = true
+text = "Pick"
+
 [node name="entity_editor" type="VBoxContainer" parent="parts/middle/left_panel/v_box_container"]
 visible = false
-margin_top = 150.0
+margin_top = 174.0
 margin_right = 66.0
-margin_bottom = 172.0
+margin_bottom = 196.0
 
 [node name="h_separator2" type="HSeparator" parent="parts/middle/left_panel/v_box_container/entity_editor"]
 margin_right = 66.0
 margin_bottom = 4.0
 
-[node name="label3" type="Label" parent="parts/middle/left_panel/v_box_container/entity_editor"]
+[node name="label_properties" type="Label" parent="parts/middle/left_panel/v_box_container/entity_editor"]
 margin_top = 8.0
 margin_right = 66.0
 margin_bottom = 22.0
 size_flags_horizontal = 3
 text = "Properties"
 align = 1
-
-[node name="placeholder" type="Control" parent="parts/middle"]
-margin_left = 88.0
-margin_right = 1920.0
-margin_bottom = 1038.0
-mouse_filter = 2
 [connection signal="gui_input" from="mouse_stop" to="." method="process_input"]
 [connection signal="pressed" from="parts/top_bar/h_box_container/open" to="." method="open_level_dialog"]
 [connection signal="pressed" from="parts/top_bar/h_box_container/save" to="." method="save_level_dialog"]

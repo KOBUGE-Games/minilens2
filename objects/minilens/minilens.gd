@@ -65,3 +65,12 @@ func add_bombs(amount: int):
 
 func explode():
 	queue_free()
+
+func get_tile_properties():
+	if bombs_available == 0:
+		return []
+	else:
+		return [str(bombs_available)]
+
+func set_tile_properties(object_properties: Array):
+	bombs_available = int(object_properties[0]) if object_properties.size() > 0 else 0

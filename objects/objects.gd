@@ -62,7 +62,8 @@ const EntityData := [
 		id = EntityType.MINILENS,
 		name = "minilens",
 		scene_path = "res://objects/minilens/minilens.tscn",
-		letters = "M><RmPp"
+		letters = "M><RmPp",
+		property_editor_scene_path = "res://objects/minilens/minilens_editor.tscn"
 	},
 	{
 		id = EntityType.BARREL,

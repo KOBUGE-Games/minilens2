@@ -13,9 +13,12 @@ func _enter_tree() -> void:
 	global_position = (grid_pos + Vector2(0.5, 0.5)) * Grid.GRID_SIZE
 
 func _exit_tree() -> void:
+	get_tree().call_group(str("teleport_", group), "update_display")
 	Grid.remove_entity(self)
 
 func update_display() -> Array:
+	if not is_inside_tree():
+		return []
 	var valid_targets = []
 	var connection_points = []
 	for target in get_tree().get_nodes_in_group(str("teleport_", target_group)):
@@ -23,7 +26,7 @@ func update_display() -> Array:
 			valid_targets.push_back(target)
 			connection_points.push_back(Vector2(0, 0))
 			var offset = target.get_grid_position() - get_grid_position()
-			offset -=offset.normalized()
+			offset -= offset.normalized()
 			connection_points.push_back(offset * Grid.GRID_SIZE)
 	$subnode/connections.points = connection_points
 	
