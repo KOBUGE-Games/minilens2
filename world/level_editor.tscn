@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://world/level_editor.gd" type="Script" id=1]
 
@@ -25,12 +25,13 @@ shift = true
 control = true
 command = true
 pressed = true
-scancode = 90
+scancode = 83
 
 [sub_resource type="ShortCut" id=6]
 shortcut = SubResource( 5 )
 
 [sub_resource type="InputEventKey" id=7]
+shift = true
 control = true
 command = true
 pressed = true
@@ -39,15 +40,26 @@ scancode = 90
 [sub_resource type="ShortCut" id=8]
 shortcut = SubResource( 7 )
 
-[sub_resource type="InputEventKey" id=10]
+[sub_resource type="InputEventKey" id=9]
+control = true
+command = true
+pressed = true
+scancode = 90
+
+[sub_resource type="ShortCut" id=10]
+shortcut = SubResource( 9 )
+
+[sub_resource type="InputEventKey" id=11]
 control = true
 command = true
 scancode = 66
 
-[sub_resource type="ShortCut" id=11]
-shortcut = SubResource( 10 )
+[sub_resource type="ShortCut" id=12]
+shortcut = SubResource( 11 )
 
-[sub_resource type="ButtonGroup" id=9]
+[sub_resource type="ButtonGroup" id=13]
+
+[sub_resource type="ButtonGroup" id=14]
 
 [node name="level_editor" type="CanvasLayer"]
 pause_mode = 2
@@ -61,6 +73,9 @@ anchor_bottom = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="top_bar" type="PanelContainer" parent="parts"]
 margin_right = 1920.0
@@ -80,72 +95,98 @@ text = "Open.."
 
 [node name="save" type="Button" parent="parts/top_bar/h_box_container"]
 margin_left = 59.0
-margin_right = 108.0
+margin_right = 100.0
 margin_bottom = 24.0
 shortcut = SubResource( 4 )
-text = "Save.."
+text = "Save"
+
+[node name="save_as" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 104.0
+margin_right = 173.0
+margin_bottom = 24.0
+shortcut = SubResource( 6 )
+text = "Save As.."
+
+[node name="levels" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 177.0
+margin_right = 238.0
+margin_bottom = 24.0
+text = "Levels.."
 
 [node name="v_separator" type="VSeparator" parent="parts/top_bar/h_box_container"]
-margin_left = 112.0
-margin_right = 116.0
+margin_left = 242.0
+margin_right = 246.0
 margin_bottom = 24.0
 
 [node name="redo" type="Button" parent="parts/top_bar/h_box_container"]
-margin_left = 120.0
-margin_right = 164.0
-margin_bottom = 24.0
-disabled = true
-shortcut = SubResource( 6 )
-text = "Redo"
-
-[node name="undo" type="Button" parent="parts/top_bar/h_box_container"]
-margin_left = 168.0
-margin_right = 214.0
+margin_left = 250.0
+margin_right = 294.0
 margin_bottom = 24.0
 disabled = true
 shortcut = SubResource( 8 )
+text = "Redo"
+
+[node name="undo" type="Button" parent="parts/top_bar/h_box_container"]
+margin_left = 298.0
+margin_right = 344.0
+margin_bottom = 24.0
+disabled = true
+shortcut = SubResource( 10 )
 text = "Undo"
 
 [node name="current_action" type="Label" parent="parts/top_bar/h_box_container"]
 modulate = Color( 1, 1, 1, 0.184314 )
-margin_left = 218.0
+margin_left = 348.0
 margin_top = 5.0
-margin_right = 880.0
+margin_right = 944.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 
 [node name="label" type="Label" parent="parts/top_bar/h_box_container"]
-margin_left = 884.0
+margin_left = 948.0
 margin_top = 5.0
-margin_right = 969.0
+margin_right = 1024.0
 margin_bottom = 19.0
-text = "Level editor -"
+text = "Level editor"
+align = 2
+
+[node name="modified" type="Label" parent="parts/top_bar/h_box_container"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 1028.0
+margin_top = 5.0
+margin_right = 1036.0
+margin_bottom = 19.0
+custom_colors/font_color = Color( 1, 0.372549, 0.372549, 1 )
+text = "*"
 align = 2
 
 [node name="level_name" type="LineEdit" parent="parts/top_bar/h_box_container"]
-margin_left = 973.0
-margin_right = 1173.0
+margin_left = 1040.0
+margin_right = 1240.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 200, 0 )
 placeholder_text = "Name"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="spacer2" type="Control" parent="parts/top_bar/h_box_container"]
-margin_left = 1177.0
-margin_right = 1839.0
+margin_left = 1244.0
+margin_right = 1840.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="play" type="Button" parent="parts/top_bar/h_box_container"]
-margin_left = 1843.0
-margin_right = 1881.0
+margin_left = 1844.0
+margin_right = 1882.0
 margin_bottom = 24.0
 toggle_mode = true
-shortcut = SubResource( 11 )
+shortcut = SubResource( 12 )
 text = "Play"
 
 [node name="close" type="Button" parent="parts/top_bar/h_box_container"]
-margin_left = 1885.0
-margin_right = 1905.0
+margin_left = 1886.0
+margin_right = 1906.0
 margin_bottom = 24.0
 text = "X"
 
@@ -218,7 +259,7 @@ margin_bottom = 170.0
 margin_right = 62.0
 margin_bottom = 20.0
 toggle_mode = true
-group = SubResource( 9 )
+group = SubResource( 13 )
 text = "Erase"
 
 [node name="add" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
@@ -226,7 +267,7 @@ margin_top = 24.0
 margin_right = 62.0
 margin_bottom = 44.0
 toggle_mode = true
-group = SubResource( 9 )
+group = SubResource( 13 )
 text = "Add"
 
 [node name="replace" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
@@ -235,7 +276,7 @@ margin_right = 62.0
 margin_bottom = 68.0
 toggle_mode = true
 pressed = true
-group = SubResource( 9 )
+group = SubResource( 13 )
 text = "Replace"
 
 [node name="pick" type="Button" parent="parts/middle/left_panel/v_box_container/modes"]
@@ -262,12 +303,92 @@ margin_bottom = 22.0
 size_flags_horizontal = 3
 text = "Properties"
 align = 1
+
+[node name="file_dialog" type="FileDialog" parent="."]
+margin_right = 358.0
+margin_bottom = 130.0
+resizable = true
+
+[node name="levels_dialog" type="AcceptDialog" parent="."]
+margin_left = 252.0
+margin_top = 141.0
+margin_right = 999.0
+margin_bottom = 556.0
+window_title = "Select Level..."
+resizable = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="layout" type="VBoxContainer" parent="levels_dialog"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 739.0
+margin_bottom = 379.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="pack" type="HBoxContainer" parent="levels_dialog/layout"]
+margin_right = 731.0
+margin_bottom = 24.0
+
+[node name="label" type="Label" parent="levels_dialog/layout/pack"]
+margin_top = 5.0
+margin_right = 33.0
+margin_bottom = 19.0
+text = "Pack:"
+
+[node name="path" type="LineEdit" parent="levels_dialog/layout/pack"]
+margin_left = 37.0
+margin_right = 668.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+editable = false
+placeholder_text = "(none)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="open" type="Button" parent="levels_dialog/layout/pack"]
+margin_left = 672.0
+margin_right = 731.0
+margin_bottom = 24.0
+text = "Open..."
+
+[node name="levels_label" type="Label" parent="levels_dialog/layout"]
+margin_top = 28.0
+margin_right = 731.0
+margin_bottom = 42.0
+text = "Levels (drag to reorder):"
+
+[node name="levels_container" type="VBoxContainer" parent="levels_dialog/layout"]
+margin_top = 46.0
+margin_right = 731.0
+margin_bottom = 46.0
+
+[node name="h_separator" type="HSeparator" parent="levels_dialog/layout"]
+margin_top = 50.0
+margin_right = 731.0
+margin_bottom = 54.0
+
+[node name="new_level" type="Button" parent="levels_dialog/layout"]
+margin_top = 58.0
+margin_right = 731.0
+margin_bottom = 78.0
+toggle_mode = true
+pressed = true
+group = SubResource( 14 )
+text = "New level"
 [connection signal="gui_input" from="mouse_stop" to="." method="process_input"]
-[connection signal="pressed" from="parts/top_bar/h_box_container/open" to="." method="open_level_dialog"]
-[connection signal="pressed" from="parts/top_bar/h_box_container/save" to="." method="save_level_dialog"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/open" to="." method="open_pack_dialog"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/save" to="." method="save_pack"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/save_as" to="." method="save_pack_as_dialog"]
+[connection signal="pressed" from="parts/top_bar/h_box_container/levels" to="." method="switch_level_dialog"]
 [connection signal="pressed" from="parts/top_bar/h_box_container/redo" to="." method="redo"]
 [connection signal="pressed" from="parts/top_bar/h_box_container/undo" to="." method="undo"]
 [connection signal="toggled" from="parts/top_bar/h_box_container/play" to="." method="play_toggled"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/erase" to="." method="select_erase"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/add" to="." method="select_add"]
 [connection signal="pressed" from="parts/middle/left_panel/v_box_container/modes/replace" to="." method="select_nonerase"]
+[connection signal="pressed" from="levels_dialog/layout/pack/open" to="." method="open_pack_dialog"]

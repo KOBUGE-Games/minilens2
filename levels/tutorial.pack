@@ -1,0 +1,152 @@
+[level Hello Earth!]
+M..B....
+########
+..#####.
+
+. = air
+M = minilens
+B = barrel
+# = solid
+
+[level Flowers]
+M..B.......
+########...
+.####.....*
+...#...####
+
+. = air
+M = minilens
+B = barrel
+# = solid
+* = flower
+
+[level Tricks]
+.*M.......B
+**#########
+##########.
+
+. = air
+* = flower
+M = minilens
+B = barrel
+# = solid
+
+[level Just push a box over it!]
+......*.....
+.*....=.....
+###=.=.=....
+...=.=.=....
+....=...=...
+....=..M=...
+...B=.###...
+..###..#....
+.........B..
+.*...*#####*
+
+. = air
+* = flower
+= = ladder
+# = solid
+M = minilens
+B = barrel
+
+[level Time for Bombs]
+...BM........
+..=#.........
+..=##*.*...B.
+..=....=####.
+..=....=...!.
+#######%#####
+
+. = air
+B = barrel
+M = minilens
+= = ladder
+# = solid
+* = flower
+! = bomb
+% = ladder + flower
+
+[level Stair Quirks]
+....M..........
+............B..
+..B.##########.
+..###..........
+..........=....
+###############
+
+. = air
+M = minilens
+B = barrel
+# = solid
+= = ladder
+
+[level Even More Tricks]
+...M.........
+...........B.
+.B.#####=#=#=
+=#......=...=
+=.......=###=
+=.......=..*.
+##########.##
+...#.........
+
+. = air
+M = minilens
+B = barrel
+# = solid
+= = ladder
+* = flower
+
+[level Static Boxes]
+..=...M....
+.XX=.......
+.*X=.!.=B.#
+..#X#X#X###
+X..........
+##########.
+.#.........
+
+. = air
+= = ladder
+M = minilens
+X = box
+* = flower
+! = bomb
+B = barrel
+# = solid
+
+[level Blue Orbs]
+.#=M.B..
+.#####..
+.#......
+.#......
+.#...#..
+.#1.....
+.#######
+......2.
+########
+
+. = air
+# = solid
+= = ladder
+M = minilens
+B = barrel
+1 = teleport:1:2
+2 = teleport:2:1
+
+[level The Fall]
+.!......##
+=#.M...B.#
+=######^.#
+=........#
+##########
+
+. = air
+# = solid
+= = ladder
+! = bomb
+M = minilens
+B = barrel
+^ = unstable
+

@@ -9,12 +9,30 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Resource",
+"class": "LevelPack",
+"language": "GDScript",
+"path": "res://world/level_pack.gd"
+}, {
+"base": "ResourceFormatLoader",
+"class": "LevelPackFormatLoader",
+"language": "GDScript",
+"path": "res://world/level_pack_resource_loader.gd"
+}, {
+"base": "ResourceFormatSaver",
+"class": "LevelPackFormatSaver",
+"language": "GDScript",
+"path": "res://world/level_pack_resource_saver.gd"
+}, {
 "base": "Node2D",
 "class": "PhysicsEntity",
 "language": "GDScript",
 "path": "res://objects/shared/physics_entity.gd"
 } ]
 _global_script_class_icons={
+"LevelPack": "",
+"LevelPackFormatLoader": "",
+"LevelPackFormatSaver": "",
 "PhysicsEntity": ""
 }
 

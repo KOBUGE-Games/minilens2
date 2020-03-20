@@ -11,10 +11,15 @@ onready var replace_button = $parts/middle/left_panel/v_box_container/modes/repl
 onready var pick_button = $parts/middle/left_panel/v_box_container/modes/pick
 onready var redo_button = $parts/top_bar/h_box_container/redo
 onready var undo_button = $parts/top_bar/h_box_container/undo
+onready var modified_asterisk = $parts/top_bar/h_box_container/modified
 onready var current_action_label = $parts/top_bar/h_box_container/current_action
 onready var play_button = $parts/top_bar/h_box_container/play
 onready var entity_editor_container = $parts/middle/left_panel/v_box_container/entity_editor
 onready var level_name = $parts/top_bar/h_box_container/level_name
+onready var file_dialog = $file_dialog
+onready var levels_dialog = $levels_dialog
+onready var levels_container = $levels_dialog/layout/levels_container
+onready var new_level_button = $levels_dialog/layout/new_level
 onready var level := get_tree().current_scene as Level
 onready var modes_group := erase_button.group as ButtonGroup
 onready var camera := preload("res://world/editor_camera.tscn").instance() as EditorCamera
@@ -29,6 +34,8 @@ var undo_redo: UndoRedo = UndoRedo.new()
 
 var selected_object_type: int
 var selected_object: int
+var pack: LevelPack = LevelPack.new()
+var current_level_idx: int = 0
 
 
 func _ready():
@@ -119,7 +126,7 @@ func play_toggled(play_pressed):
 	for button in modes_group.get_buttons():
 		button.disabled = play_pressed
 	level_name.editable = not play_pressed
-	ui_root.modulate.a = 0.3 if play_pressed else 1
+	ui_root.modulate.a = 0.3 if play_pressed else 1.0
 	pick_button.disabled = play_pressed
 	
 	if tiles_container.get_focus_owner():
@@ -154,6 +161,8 @@ func redo():
 	undo_redo.redo()
 
 func update_undo_redo():
+	if undo_redo.has_undo():
+		modified_asterisk.modulate.a = 1.0 # HACK: Switching levels resets undoredo
 	current_action_label.text = undo_redo.get_current_action_name()
 	redo_button.disabled = not undo_redo.has_redo()
 	undo_button.disabled = not undo_redo.has_undo()
@@ -358,40 +367,93 @@ func _unhandled_input(event):
 		if event.scancode == KEY_CONTROL:
 			pick_button.pressed = event.pressed
 
-func open_level_dialog():
-	var dialog := FileDialog.new()
-	dialog.mode = FileDialog.MODE_OPEN_FILE
+func open_pack_dialog():
+	file_dialog.mode = FileDialog.MODE_OPEN_FILE
 	if OS.has_feature("debug"):
-		dialog.access = FileDialog.ACCESS_RESOURCES
+		file_dialog.access = FileDialog.ACCESS_RESOURCES
 	else:
-		dialog.access = FileDialog.ACCESS_USERDATA
-	dialog.filters = ["*.level", "*.pack"]
-	add_child(dialog)
-	dialog.popup_centered_ratio()
-	dialog.connect("popup_hide", dialog, "queue_free")
-	var file: String = yield(dialog, "file_selected")
+		file_dialog.access = FileDialog.ACCESS_USERDATA
+	file_dialog.filters = ["*.level", "*.pack"]
+	file_dialog.popup_centered_ratio()
+	var file: String = yield(file_dialog, "file_selected")
 	
-	# TODO: Add logic for reading packs
-	if level.load_from_file(file):
-		level_name.text = level.level_name
-		
-		undo_redo.clear_history()
-		undo_button.disabled = true
-		redo_button.disabled = true
+	pack = ResourceLoader.load(file, "", true) as LevelPack
+	current_level_idx = 0
+	
+	modified_asterisk.modulate.a = 0.0
+	
+	switch_level_dialog(true)
 
-func save_level_dialog():
-	var dialog := FileDialog.new()
-	dialog.mode = FileDialog.MODE_SAVE_FILE
-	if OS.has_feature("debug"):
-		dialog.access = FileDialog.ACCESS_RESOURCES
-	else:
-		dialog.access = FileDialog.ACCESS_USERDATA
-	dialog.filters = ["*.level", "*.pack"]
-	add_child(dialog)
-	dialog.popup_centered_ratio()
-	dialog.connect("popup_hide", dialog, "queue_free")
-	var file: String = yield(dialog, "file_selected")
+func switch_level_dialog(drop_current: bool = false):
+	if not drop_current:
+		update_level_in_pack()
 	
-	# TODO: Add logic for saving packs
+	for child in levels_container.get_children():
+		child.queue_free()
+	
+	new_level_button.pressed = true
+	for i in range(pack.levels.size()):
+		var level_button = preload("res://world/level_editor_level_button.tscn").instance()
+		level_button.text = pack.levels[i].name
+		level_button.group = new_level_button.group
+		if current_level_idx == i:
+			level_button.pressed = true
+		level_button.connect("move_to", self, "move_level", [level_button])
+		levels_container.add_child(level_button)
+	
+	levels_dialog.popup_centered_ratio(0.5)
+	yield(levels_dialog, "popup_hide")
+	
+	var selected_button = new_level_button.group.get_pressed_button()
+	if selected_button == new_level_button:
+		current_level_idx = -1
+		level.clear()
+	else:
+		current_level_idx = selected_button.get_position_in_parent()
+		level.set_state(pack.levels[current_level_idx])
+	
+	level_name.text = level.level_name
+	
+	undo_redo.clear_history()
+	update_undo_redo()
+
+func move_level(to_pos, level_button):
+	var from_id = level_button.get_position_in_parent()
+	
+	level_button.get_parent().move_child(level_button, to_pos)
+	
+	var to_id = level_button.get_position_in_parent()
+	
+	var level_data = pack.levels[from_id]
+	pack.levels.remove(from_id)
+	pack.levels.insert(to_id, level_data)
+
+func save_pack_as_dialog():
+	file_dialog.mode = FileDialog.MODE_SAVE_FILE
+	if OS.has_feature("debug"):
+		file_dialog.access = FileDialog.ACCESS_RESOURCES
+	else:
+		file_dialog.access = FileDialog.ACCESS_USERDATA
+	file_dialog.filters = ["*.level", "*.pack"]
+	file_dialog.popup_centered_ratio()
+	var file: String = yield(file_dialog, "file_selected")
+	
+	pack.resource_path = file
+	save_pack()
+
+func save_pack():
+	if pack.resource_path == "":
+		save_pack_as_dialog()
+		return
+	
+	update_level_in_pack()
+	ResourceSaver.save(pack.resource_path, pack)
+	modified_asterisk.modulate.a = 0.0
+
+func update_level_in_pack():
 	level.level_name = level_name.text
-	level.save_to_file(file)
+	if current_level_idx < 0 or current_level_idx >= pack.levels.size():
+		current_level_idx = pack.levels.size()
+		pack.levels.push_back(level.get_state())
+	else:
+		pack.levels[current_level_idx] = level.get_state()

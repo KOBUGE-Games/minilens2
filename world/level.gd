@@ -17,6 +17,7 @@ func clear() -> void:
 	tile_map.clear()
 	tile_map._update_positions()
 	level_acid._update_acid()
+	level_name = "Unnamed"
 
 func clear_pos(pos: Vector2) -> void:
 	if tile_map.get_cellv(pos) != -1:
@@ -169,7 +170,7 @@ func set_state(state: Dictionary, skip_equal: bool = false):
 	tile_map._update_positions()
 	level_acid._update_acid()
 
-func are_states_equal(state_a: Dictionary, state_b: Dictionary) -> bool:
+static func are_states_equal(state_a: Dictionary, state_b: Dictionary) -> bool:
 	if state_a.name != state_b.name: return false
 	if state_a.tiles.size() != state_b.tiles.size(): return false
 	
@@ -180,153 +181,9 @@ func are_states_equal(state_a: Dictionary, state_b: Dictionary) -> bool:
 	return true
 
 
-func save_to_file(path: String) -> bool:
-	var state = get_state()
-	var name_in_pack = state.name
-	var tiles = state.tiles
-	
-	# Assign letters to tiles (can be combined with next pass)
-	
-	var bounds := Rect2()
-	var definitions := {"air": "."}
-	var characters_used := {".": true}
-	for pos in tiles:
-		var key = PoolStringArray(tiles[pos]).join(" + ")
-		if not definitions.has(key):
-			var picked_letter = pick_letter(tiles[pos], characters_used)
-			characters_used[picked_letter] = true
-			definitions[key] = picked_letter
-		if bounds == Rect2():
-			bounds = Rect2(pos, Vector2(0, 0))
-		else:
-			bounds = bounds.expand(pos)
-	
-	# Write everything out
-	
-	# TODO: Add logic for appending/replacing in pack
-	var file := File.new()
-	if file.open(path, File.WRITE) != OK:
-		push_error("Couldn't open file '" + path + "'")
-		return false
-	file.store_line("[level " + name_in_pack + "]")
-	
-	for y in range(bounds.position.y, bounds.end.y + 1):
-		var line = ""
-		for x in range(bounds.position.x, bounds.end.x + 1):
-			var pos = Vector2(x, y)
-			if tiles.has(pos):
-				line += definitions[PoolStringArray(tiles[pos]).join(" + ")]
-			else:
-				line += definitions["air"]
-		file.store_line(line)
-	
-	file.store_line("")
-	
-	for definition in definitions:
-		var line = definitions[definition] + " = " + definition
-		file.store_line(line)
-	
-	file.close()
-	return true
-
-func load_from_file(path: String, name_in_pack: String = "") -> bool:
-	var file := File.new()
-	if file.open(path, File.READ) != OK:
-		push_error("Couldn't open file '" + path + "'")
-		return false
-	
-	while not file.eof_reached():
-		var line := file.get_line()
-		if line.begins_with("[level ") and line.ends_with("]"):
-			var found_level_name := line.substr(7, line.length() - 8)
-			if found_level_name == name_in_pack or name_in_pack == "":
-				name_in_pack = found_level_name
-				break
-	
-	# At level's tilemap now, continue parsing
-	var raw_tiles := {}
-	var size := Vector2()
-	var y = 0
-	while not file.eof_reached():
-		var line := file.get_line()
-		if (y > 0 and line.length() == 0) or line.find(" ") != -1:
-			break
-		if line != "":
-			var x = 0
-			for definition in line:
-				raw_tiles[Vector2(x, y)] = definition
-				x += 1
-			y += 1
-			size = Vector2(max(size.x, x), y)
-	
-	# At level's tile definitions now
-	var definitions := {}
-	while not file.eof_reached():
-		var line := file.get_line().strip_edges()
-		if line == "": continue
-		if line[0] == "[" and (line[1] != " " or line[1] != "="): break
-		
-		var split_pos := line.find("=", 1)
-		var tile := line[0]
-		var definition := line.substr(split_pos + 1, line.length() - split_pos - 1).split("+")
-		for i in range(definition.size()):
-			definition[i] = definition[i].strip_edges()
-		definitions[tile] = definition
-	
-	# Read what we needed to, close the file
-	file.close()
-	
-	# Apply definitions to tiles
-	var tiles := {}
-	var offset := -(size / 2).floor()
-	for cell in raw_tiles:
-		if not definitions.has(raw_tiles[cell]):
-			push_error("Unknown tile: " + raw_tiles[cell])
-			continue
-		tiles[cell + offset] = definitions[raw_tiles[cell]]
-	
-	set_state({tiles = tiles, name = name_in_pack})
-	return true
-
 func _position_sort(a: Node, b: Node) -> bool:
 	if a is Node2D and b is Node2D:
 		return a.global_position.y < b.global_position.y or (a.global_position.y == b.global_position.y and a.global_position.x < b.global_position.x)
 	else:
 		return int(a is Node2D) < int(b is Node2D)
 
-func pick_letter(tiles: PoolStringArray, used: Dictionary) -> String:
-	var scored_letters := {}
-	
-	for tile in tiles:
-		var properties = Array(tile.split(":"))
-		var object_name: String = properties.pop_front()
-		var letters: String
-		if Objects.is_tile_name(object_name):
-			var id: int = Objects.TileByName[object_name]
-			letters = Objects.TileData[id].letters
-		else:
-			var id: int = Objects.EntityByName[object_name]
-			letters = Objects.EntityData[id].letters
-			
-		for i in range(letters.length()):
-			var letter := letters[i]
-			if !scored_letters.has(letter):
-				scored_letters[letter] = 0
-			scored_letters[letter] += letters.length() - i
-	
-	var best_letter_score := 0
-	var best_letter := ""
-	for letter in scored_letters:
-		if !used.has(letter) and best_letter_score < scored_letters[letter]:
-			best_letter = letter
-			best_letter_score = scored_letters[letter]
-	
-	if best_letter != "":
-		return best_letter
-	
-	for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz":
-		if !used.has(letter):
-			return letter
-	
-	assert(false)
-	return " "
