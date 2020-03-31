@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://world/level_editor_level_button.gd" type="Script" id=1]
+[ext_resource path="res://editor/object_button.gd" type="Script" id=1]
 
 [sub_resource type="ButtonGroup" id=1]
 

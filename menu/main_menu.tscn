@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://menu/main_menu.gd" type="Script" id=1]
+
+[node name="main_menu" type="CenterContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="layout" type="VBoxContainer" parent="."]
+margin_left = 879.0
+margin_top = 519.0
+margin_right = 1040.0
+margin_bottom = 561.0
+
+[node name="label" type="Label" parent="layout"]
+margin_left = 53.0
+margin_right = 108.0
+margin_bottom = 14.0
+size_flags_horizontal = 4
+text = "Minilens"
+
+[node name="selection" type="HBoxContainer" parent="layout"]
+margin_top = 18.0
+margin_right = 161.0
+margin_bottom = 38.0
+
+[node name="label" type="Label" parent="layout/selection"]
+margin_top = 3.0
+margin_right = 29.0
+margin_bottom = 17.0
+size_flags_horizontal = 4
+text = "Pack"
+
+[node name="pack" type="OptionButton" parent="layout/selection"]
+margin_left = 33.0
+margin_right = 62.0
+margin_bottom = 20.0
+size_flags_horizontal = 4
+
+[node name="editor" type="Button" parent="layout/selection"]
+margin_left = 66.0
+margin_right = 161.0
+margin_bottom = 20.0
+toggle_mode = true
+text = "Enable Editor"
+
+[node name="level_list" type="GridContainer" parent="layout"]
+margin_top = 42.0
+margin_right = 161.0
+margin_bottom = 42.0
+[connection signal="item_selected" from="layout/selection/pack" to="." method="pack_selected"]

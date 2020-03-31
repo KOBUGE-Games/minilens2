@@ -1,28 +1,28 @@
-extends CanvasLayer
+extends Node
 
 const Level = preload("res://world/level.gd")
-const EditorCamera = preload("res://world/editor_camera.gd")
+const EditorCamera = preload("res://editor/editor_camera.gd")
 
-onready var ui_root = $parts
-onready var tiles_container = $parts/middle/left_panel/v_box_container/tiles
-onready var entities_container = $parts/middle/left_panel/v_box_container/entities
-onready var erase_button = $parts/middle/left_panel/v_box_container/modes/erase
-onready var replace_button = $parts/middle/left_panel/v_box_container/modes/replace
-onready var pick_button = $parts/middle/left_panel/v_box_container/modes/pick
-onready var redo_button = $parts/top_bar/h_box_container/redo
-onready var undo_button = $parts/top_bar/h_box_container/undo
-onready var modified_asterisk = $parts/top_bar/h_box_container/modified
-onready var current_action_label = $parts/top_bar/h_box_container/current_action
-onready var play_button = $parts/top_bar/h_box_container/play
-onready var entity_editor_container = $parts/middle/left_panel/v_box_container/entity_editor
-onready var level_name = $parts/top_bar/h_box_container/level_name
-onready var file_dialog = $file_dialog
-onready var levels_dialog = $levels_dialog
-onready var levels_container = $levels_dialog/layout/levels_container
-onready var new_level_button = $levels_dialog/layout/new_level
-onready var level := get_tree().current_scene as Level
+onready var ui_root = $gui/parts
+onready var tiles_container = $gui/parts/middle/left_panel/v_box_container/tiles
+onready var entities_container = $gui/parts/middle/left_panel/v_box_container/entities
+onready var erase_button = $gui/parts/middle/left_panel/v_box_container/modes/erase
+onready var replace_button = $gui/parts/middle/left_panel/v_box_container/modes/replace
+onready var pick_button = $gui/parts/middle/left_panel/v_box_container/modes/pick
+onready var redo_button = $gui/parts/top_bar/h_box_container/redo
+onready var undo_button = $gui/parts/top_bar/h_box_container/undo
+onready var modified_asterisk = $gui/parts/top_bar/h_box_container/modified
+onready var current_action_label = $gui/parts/top_bar/h_box_container/current_action
+onready var play_button = $gui/parts/top_bar/h_box_container/play
+onready var entity_editor_container = $gui/parts/middle/left_panel/v_box_container/entity_editor
+onready var level_name = $gui/parts/top_bar/h_box_container/level_name
+onready var file_dialog = $gui/file_dialog
+onready var levels_dialog = $gui/levels_dialog
+onready var levels_container = $gui/levels_dialog/layout/levels_container
+onready var new_level_button = $gui/levels_dialog/layout/new_level
+onready var level := $level as Level
 onready var modes_group := erase_button.group as ButtonGroup
-onready var camera := preload("res://world/editor_camera.tscn").instance() as EditorCamera
+onready var camera := $editor_camera as EditorCamera
 var parts_group: ButtonGroup
 
 var default_tile_button: Button
@@ -30,26 +30,25 @@ var default_entity_button: Button
 var air_tile_button: Button
 var entity_editor: Control = null
 
-var undo_redo: UndoRedo = UndoRedo.new()
+var undo_redo := UndoRedo.new()
 
 var selected_object_type: int
 var selected_object: int
-var pack: LevelPack = LevelPack.new()
+
+var current_pack: LevelPack = LevelPack.new()
 var current_level_idx: int = 0
 
 
 func _ready():
-	if level == self or level == null:
-		level = preload("res://world/level.tscn").instance() as Level
-		get_tree().root.call_deferred("add_child", level)
-	
-	get_tree().root.call_deferred("add_child", camera)
-	camera.call_deferred("make_current")
-	
+	if current_level_idx < current_pack.levels.size():
+		level.set_state(current_pack.levels[current_level_idx])
+	else:
+		current_level_idx = -1
+		level.clear()
 	undo_redo.connect("version_changed", self, "update_undo_redo")
 	
 	for tile_type in range(Objects.TileType.COUNT):
-		var button = preload("res://world/level_editor_part.tscn").instance()
+		var button = preload("res://editor/object_button.tscn").instance()
 		if Objects.TileData[tile_type].has("label"):
 			button.text = Objects.TileData[tile_type].label
 		else:
@@ -75,7 +74,7 @@ func _ready():
 		button.connect("pressed", self, "set_selected_tile", [tile_type])
 	
 	for entity_type in range(Objects.EntityType.COUNT):
-		var button = preload("res://world/level_editor_part.tscn").instance()
+		var button = preload("res://editor/object_button.tscn").instance()
 		if Objects.EntityData[entity_type].has("label"):
 			button.text = Objects.EntityData[entity_type].label
 		else:
@@ -377,7 +376,7 @@ func open_pack_dialog():
 	file_dialog.popup_centered_ratio()
 	var file: String = yield(file_dialog, "file_selected")
 	
-	pack = ResourceLoader.load(file, "", true) as LevelPack
+	current_pack = ResourceLoader.load(file, "", true) as LevelPack
 	current_level_idx = 0
 	
 	modified_asterisk.modulate.a = 0.0
@@ -392,9 +391,9 @@ func switch_level_dialog(drop_current: bool = false):
 		child.queue_free()
 	
 	new_level_button.pressed = true
-	for i in range(pack.levels.size()):
-		var level_button = preload("res://world/level_editor_level_button.tscn").instance()
-		level_button.text = pack.levels[i].name
+	for i in range(current_pack.levels.size()):
+		var level_button = preload("res://editor/level_button.tscn").instance()
+		level_button.text = current_pack.levels[i].name
 		level_button.group = new_level_button.group
 		if current_level_idx == i:
 			level_button.pressed = true
@@ -410,7 +409,7 @@ func switch_level_dialog(drop_current: bool = false):
 		level.clear()
 	else:
 		current_level_idx = selected_button.get_position_in_parent()
-		level.set_state(pack.levels[current_level_idx])
+		level.set_state(current_pack.levels[current_level_idx])
 	
 	level_name.text = level.level_name
 	
@@ -424,9 +423,9 @@ func move_level(to_pos, level_button):
 	
 	var to_id = level_button.get_position_in_parent()
 	
-	var level_data = pack.levels[from_id]
-	pack.levels.remove(from_id)
-	pack.levels.insert(to_id, level_data)
+	var level_data = current_pack.levels[from_id]
+	current_pack.levels.remove(from_id)
+	current_pack.levels.insert(to_id, level_data)
 
 func save_pack_as_dialog():
 	file_dialog.mode = FileDialog.MODE_SAVE_FILE
@@ -438,22 +437,26 @@ func save_pack_as_dialog():
 	file_dialog.popup_centered_ratio()
 	var file: String = yield(file_dialog, "file_selected")
 	
-	pack.resource_path = file
+	current_pack.resource_path = file
 	save_pack()
 
 func save_pack():
-	if pack.resource_path == "":
+	if current_pack.resource_path == "":
 		save_pack_as_dialog()
 		return
 	
 	update_level_in_pack()
-	ResourceSaver.save(pack.resource_path, pack)
+	ResourceSaver.save(current_pack.resource_path, current_pack)
 	modified_asterisk.modulate.a = 0.0
+
+func select_level(pack: LevelPack, level_idx: int):
+	current_pack = pack
+	current_level_idx = level_idx
 
 func update_level_in_pack():
 	level.level_name = level_name.text
-	if current_level_idx < 0 or current_level_idx >= pack.levels.size():
-		current_level_idx = pack.levels.size()
-		pack.levels.push_back(level.get_state())
+	if current_level_idx < 0 or current_level_idx >= current_pack.levels.size():
+		current_level_idx = current_pack.levels.size()
+		current_pack.levels.push_back(level.get_state())
 	else:
-		pack.levels[current_level_idx] = level.get_state()
+		current_pack.levels[current_level_idx] = level.get_state()

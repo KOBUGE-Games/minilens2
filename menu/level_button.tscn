@@ -1,0 +1,10 @@
+[gd_scene format=2]
+
+[node name="button" type="Button"]
+margin_right = 150.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 150, 100 )
+text = "1: Even Harder"
+__meta__ = {
+"_edit_use_anchors_": false
+}

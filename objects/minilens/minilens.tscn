@@ -2,7 +2,9 @@
 
 [ext_resource path="res://objects/minilens/minilens.gd" type="Script" id=1]
 
-[node name="minilens" type="Node2D"]
+[node name="minilens" type="Node2D" groups=[
+"minilens",
+]]
 script = ExtResource( 1 )
 walk_speed = 288.0
 

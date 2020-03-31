@@ -29,7 +29,7 @@ func remove_goal(goal: Object) -> void:
 		goal.disconnect("tree_exited", self, "remove_goal")
 
 func get_goal_count_left(type: int) -> int:
-	return goal_counts[type]
+	return goal_counts.get(type, 0)
 
 func get_total_goals_left() -> int:
 	var total = 0

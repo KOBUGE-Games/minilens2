@@ -6,9 +6,6 @@ onready var tile_map := $tile_map as TileMapEntity
 onready var level_acid := $acid
 var level_name := "Unnamed"
 
-func _ready() -> void:
-	pass #load_from_file("res://levels/test.level")
-
 func clear() -> void:
 	for child in get_children():
 		if child.has_method("get_grid_position"):
