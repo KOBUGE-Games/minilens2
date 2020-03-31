@@ -8,7 +8,6 @@ var packs := []
 var uncategorized_levels := []
 
 func _ready():
-	var i = 0
 	pack_select.clear()
 	
 	var directory := Directory.new()

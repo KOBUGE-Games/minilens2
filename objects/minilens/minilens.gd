@@ -20,6 +20,7 @@ func _input(event):
 			var bomb_instance = preload("res://objects/bomb/bomb.tscn").instance()
 			bomb_instance.position = position
 			get_parent().add_child(bomb_instance)
+			emit_signal("moved")
 
 func calculate_move() -> void:
 	var is_acid_below = Grid.has_entity_at_position(get_grid_position() + Vector2(0, 1), Grid.Flag.ACID)

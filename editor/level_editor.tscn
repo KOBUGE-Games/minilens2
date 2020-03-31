@@ -145,31 +145,31 @@ text = "Undo"
 modulate = Color( 1, 1, 1, 0.184314 )
 margin_left = 348.0
 margin_top = 5.0
-margin_right = 944.0
+margin_right = 934.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 
 [node name="label" type="Label" parent="gui/parts/top_bar/h_box_container"]
-margin_left = 948.0
+margin_left = 938.0
 margin_top = 5.0
-margin_right = 1024.0
+margin_right = 1014.0
 margin_bottom = 19.0
 text = "Level editor"
 align = 2
 
 [node name="modified" type="Label" parent="gui/parts/top_bar/h_box_container"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 1028.0
+margin_left = 1018.0
 margin_top = 5.0
-margin_right = 1036.0
+margin_right = 1026.0
 margin_bottom = 19.0
 custom_colors/font_color = Color( 1, 0.372549, 0.372549, 1 )
 text = "*"
 align = 2
 
 [node name="level_name" type="LineEdit" parent="gui/parts/top_bar/h_box_container"]
-margin_left = 1040.0
-margin_right = 1240.0
+margin_left = 1030.0
+margin_right = 1230.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 200, 0 )
 placeholder_text = "Name"
@@ -178,24 +178,24 @@ __meta__ = {
 }
 
 [node name="spacer2" type="Control" parent="gui/parts/top_bar/h_box_container"]
-margin_left = 1244.0
-margin_right = 1840.0
+margin_left = 1234.0
+margin_right = 1820.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="play" type="Button" parent="gui/parts/top_bar/h_box_container"]
-margin_left = 1844.0
-margin_right = 1882.0
+margin_left = 1824.0
+margin_right = 1862.0
 margin_bottom = 24.0
 toggle_mode = true
 shortcut = SubResource( 12 )
 text = "Play"
 
-[node name="close" type="Button" parent="gui/parts/top_bar/h_box_container"]
-margin_left = 1886.0
+[node name="quit" type="Button" parent="gui/parts/top_bar/h_box_container"]
+margin_left = 1866.0
 margin_right = 1906.0
 margin_bottom = 24.0
-text = "X"
+text = "Quit"
 
 [node name="middle" type="HBoxContainer" parent="gui/parts"]
 margin_top = 42.0
@@ -399,6 +399,7 @@ text = "New level"
 [connection signal="pressed" from="gui/parts/top_bar/h_box_container/redo" to="." method="redo"]
 [connection signal="pressed" from="gui/parts/top_bar/h_box_container/undo" to="." method="undo"]
 [connection signal="toggled" from="gui/parts/top_bar/h_box_container/play" to="." method="play_toggled"]
+[connection signal="pressed" from="gui/parts/top_bar/h_box_container/quit" to="." method="menu"]
 [connection signal="pressed" from="gui/parts/middle/left_panel/v_box_container/modes/erase" to="." method="select_erase"]
 [connection signal="pressed" from="gui/parts/middle/left_panel/v_box_container/modes/add" to="." method="select_add"]
 [connection signal="pressed" from="gui/parts/middle/left_panel/v_box_container/modes/replace" to="." method="select_nonerase"]

@@ -18,6 +18,7 @@ onready var entity_editor_container = $gui/parts/middle/left_panel/v_box_contain
 onready var level_name = $gui/parts/top_bar/h_box_container/level_name
 onready var file_dialog = $gui/file_dialog
 onready var levels_dialog = $gui/levels_dialog
+onready var pack_path_box = $gui/levels_dialog/layout/pack/path
 onready var levels_container = $gui/levels_dialog/layout/levels_container
 onready var new_level_button = $gui/levels_dialog/layout/new_level
 onready var level := $level as Level
@@ -375,7 +376,7 @@ func open_pack_dialog():
 	file_dialog.filters = ["*.level", "*.pack"]
 	file_dialog.popup_centered_ratio()
 	var file: String = yield(file_dialog, "file_selected")
-	
+	current_pack = null
 	current_pack = ResourceLoader.load(file, "", true) as LevelPack
 	current_level_idx = 0
 	
@@ -389,6 +390,7 @@ func switch_level_dialog(drop_current: bool = false):
 	
 	for child in levels_container.get_children():
 		child.queue_free()
+		levels_container.remove_child(child)
 	
 	new_level_button.pressed = true
 	for i in range(current_pack.levels.size()):
@@ -400,15 +402,19 @@ func switch_level_dialog(drop_current: bool = false):
 		level_button.connect("move_to", self, "move_level", [level_button])
 		levels_container.add_child(level_button)
 	
+	pack_path_box.text = current_pack.resource_path
+	
 	levels_dialog.popup_centered_ratio(0.5)
 	yield(levels_dialog, "popup_hide")
 	
 	var selected_button = new_level_button.group.get_pressed_button()
-	if selected_button == new_level_button:
+	
+	current_level_idx = selected_button.get_position_in_parent()
+	
+	if current_level_idx < 0 or current_level_idx >= current_pack.levels.size():
 		current_level_idx = -1
 		level.clear()
 	else:
-		current_level_idx = selected_button.get_position_in_parent()
 		level.set_state(current_pack.levels[current_level_idx])
 	
 	level_name.text = level.level_name
@@ -460,3 +466,7 @@ func update_level_in_pack():
 		current_pack.levels.push_back(level.get_state())
 	else:
 		current_pack.levels[current_level_idx] = level.get_state()
+
+func menu():
+	get_tree().paused = false
+	get_tree().change_scene("res://menu/main_menu.tscn")
